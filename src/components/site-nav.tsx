@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode, type RefObject } from "react";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { BrandMark } from "@/components/brand-mark";
 import { HudLoader } from "@/components/hud-loader";
 import { localePrefix, translate, type Locale } from "@/lib/i18n";
 import { LocaleProvider } from "@/components/locale-context";
@@ -64,7 +63,7 @@ function writeCollapsed(collapsed: boolean) {
   window.dispatchEvent(new Event(CHANGE_EVENT));
 }
 
-export function AppShell({ children, locale }: { children: ReactNode; locale: Locale }) {
+export function AppShell({ children, locale, homeHero, homeSidebar }: { children: ReactNode; locale: Locale; homeHero?: ReactNode; homeSidebar?: ReactNode }) {
   const t = (text: string) => translate(locale, text);
   const collapsed = useSyncExternalStore(subscribe, readCollapsed, () => false);
   const pathname = usePathname();
@@ -168,17 +167,24 @@ export function AppShell({ children, locale }: { children: ReactNode; locale: Lo
     };
   }, [locale]);
 
+  const content = <main id="conteudo" className={home ? "site-main home-center" : "site-main"}>{children}</main>;
+
   return (
     <LocaleProvider locale={locale}>
-    <div className={`nav-offset pb-20 md:pb-0 ${collapsed ? "md:pl-[4.5rem]" : "md:pl-60"}`}>
-      <Sidebar collapsed={collapsed} pathname={stripLocale(pathname)} locale={locale} />
-      <SiteHeader locale={locale} />
-      <main id="conteudo" className="mx-auto w-full max-w-6xl px-4 py-6 md:px-6">
-        {children}
-      </main>
+    <div className={`premium-shell pb-20 md:pb-0${home ? " premium-shell--home" : ""}`}>
+      <SiteHeader locale={locale} pathname={stripLocale(pathname)} />
+      <div className={home ? "site-content site-content--home" : `site-content site-content--inside ${collapsed ? "site-content--compact" : ""}`}>
+        {home ? <>
+          {homeHero}
+          <div className="home-grid home-grid--overview">{homeSidebar}{content}</div>
+        </> : <>
+          <Sidebar collapsed={collapsed} pathname={stripLocale(pathname)} locale={locale} />
+          {content}
+        </>}
+      </div>
       <SiteFooter locale={locale} />
       <MobileNav pathname={stripLocale(pathname)} locale={locale} />
-      {hud ? <HudLoader variant={home ? "compact" : "full"} progress={hud.progress} phase={hud.phase} label={hud.label} /> : null}
+      {hud ? <HudLoader variant="compact" progress={hud.progress} phase={hud.phase} label={hud.label} /> : null}
     </div>
     </LocaleProvider>
   );
@@ -188,13 +194,8 @@ function Sidebar({ collapsed, pathname, locale }: { collapsed: boolean; pathname
   const t = (text: string) => translate(locale, text);
   return (
     <aside
-      className={`chrome nav-aside fixed inset-y-0 left-0 z-40 hidden h-screen flex-col border-r border-line shadow-[4px_0_24px_rgb(0_0_0/0.18)] md:flex ${collapsed ? "w-[4.5rem]" : "w-60"}`}
+      className="chrome nav-aside hidden min-w-0 flex-col md:flex"
     >
-      <div className={`flex items-center border-b border-line px-3 py-4 ${collapsed ? "justify-center" : ""}`}>
-        <Link href={localePrefix(locale)} className={`brand-lockup min-w-0 ${collapsed ? "justify-center" : "w-full"}`} aria-label="Linha de Jogo, visão geral">
-          <BrandMark compact={collapsed} />
-        </Link>
-      </div>
       <nav className="min-h-0 flex-1 overflow-y-auto p-2" aria-label="Secções">
         {menuGroups.map((group) => (
           <div key={group.label}>

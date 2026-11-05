@@ -87,3 +87,33 @@ it.each(["pt-BR", "pt-PT", "en-US"])("renders home sections in %s", async (local
   expect(result).toContain(locale === "en-US" ? "Recent results" : "Resultados recentes");
   expect(result).toContain(locale === "en-US" ? "Daily schedule by league" : "Quadro do dia, por competição");
 });
+
+// Check the real page tree without starting a browser or running background reads.
+function elements(node: ReactNode): import("react").ReactElement<Record<string, unknown>>[] {
+  if (Array.isArray(node)) return node.flatMap(elements);
+  if (!isValidElement<Record<string, unknown>>(node)) return [];
+  return [node, ...elements(node.props.children as ReactNode)];
+}
+
+it.each(["pt-BR", "pt-PT", "en-US"])("connects premium panels to saved data and real routes in %s", async locale => {
+  mocks.locale.mockResolvedValue(locale);
+  mocks.matches.mockImplementation(async group => group === "upcoming" ? [{
+    externalId: 73, utcDate: new Date("2026-11-10T20:00:00Z"), status: "TIMED",
+    regularHome: null, regularAway: null, fetchedAt: new Date("2026-11-05T10:00:00Z"),
+    competitionName: "Saved league", homeName: "Saved home", awayName: "Saved away",
+    homeCrest: null, awayCrest: null,
+  }] : []);
+  const page = await HomePage();
+  const nodes = elements(page);
+  const classes = nodes.map(node => node.props.className).join(" ");
+  const hrefs = nodes.map(node => node.props.href);
+  expect(classes).toContain("home-dashboard");
+  expect(classes).toContain("premium-panel daily-board");
+  expect(classes).not.toContain("led-board");
+  expect(hrefs).toContain(`/${locale.toLowerCase()}/jogos/73`);
+  expect(contents(page)).toContain("Saved home");
+  expect(contents(page)).toContain("Saved away");
+  expect(nodes.some(node => typeof node.type === "function" && node.type.name === "SetupPanel")).toBe(false);
+  expect(mocks.matches).toHaveBeenCalledTimes(3);
+  expect(mocks.sync).not.toHaveBeenCalled();
+});

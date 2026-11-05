@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { AppShell } from "@/components/site-nav";
+import { StadiumHero } from "@/components/stadium-hero";
+import { HomeSidebar } from "@/components/home-sidebar";
 import { getSiteUrl } from "@/lib/site-url";
 import { localePrefix, type Locale } from "@/lib/i18n";
 import { getLocale } from "@/lib/get-locale";
 import { headers } from "next/headers";
 import "./globals.css";
+import "./premium.css";
 
 const siteUrl = getSiteUrl();
 const shareImage = siteUrl ? new URL("/marca/linha-de-jogo-nova.jpg", siteUrl).toString() : undefined;
@@ -66,7 +69,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,500;0,600;0,700;0,800;1,700;1,800&family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
@@ -78,7 +81,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         >
           Saltar para o conteúdo
         </a>
-        <AppShell locale={locale}>{children}</AppShell>
+        <AppShell locale={locale} homeHero={<StadiumHero locale={locale} />} homeSidebar={<HomeSidebar locale={locale} />}>{children}</AppShell>
       </body>
     </html>
   );

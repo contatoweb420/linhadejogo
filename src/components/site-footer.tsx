@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { getSocialProfileLinks } from "@/lib/social-links";
-import { translate, type Locale } from "@/lib/i18n";
+import { localePrefix, translate, type Locale } from "@/lib/i18n";
 
 export function SiteFooter({ locale }: { locale: Locale }) {
   const t = (text: string) => translate(locale, text);
   const socialLinks = getSocialProfileLinks();
   return (
-    <footer className="mt-8 border-t border-line bg-surface">
+    <footer className="site-footer border-t border-line">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-3 px-4 py-6 text-sm text-muted md:flex-row md:justify-between">
         <p className="max-w-xl">
           {locale === "en-US"
@@ -21,10 +21,10 @@ export function SiteFooter({ locale }: { locale: Locale }) {
               <SocialIcon name={icon} />
             </a>
           ))}
-          <Link href="/privacidade" className="text-primary underline-offset-4 hover:text-primary-hover hover:underline">
+          <Link href={`${localePrefix(locale)}/privacidade`} className="text-primary underline-offset-4 hover:text-primary-hover hover:underline">
             {t("Privacidade")}
           </Link>
-          <Link href="/condicoes" className="text-primary underline-offset-4 hover:text-primary-hover hover:underline">
+          <Link href={`${localePrefix(locale)}/condicoes`} className="text-primary underline-offset-4 hover:text-primary-hover hover:underline">
             {t("Condições")}
           </Link>
         </div>

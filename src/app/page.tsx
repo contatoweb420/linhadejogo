@@ -4,7 +4,6 @@ import { CountUp, Reveal } from "@/components/chart-motion";
 import { CompetitionLink } from "@/components/competition-link";
 import { Cover } from "@/components/cover";
 import { EditorialImage } from "@/components/editorial-image";
-import { LedSign } from "@/components/led-sign";
 import { Crest } from "@/components/crest";
 import { SetupPanel } from "@/components/setup-panel";
 import { publicArticles } from "@/server/blog-agent/public";
@@ -47,89 +46,57 @@ export default async function HomePage() {
   const featuredCompetitions = [...catalog].sort((a, b) => rankCompetition(a.code) - rankCompetition(b.code)).slice(0, 8);
 
   return (
-    <div className="grid gap-8" data-home-ready>
-      <header className="grid min-w-0 gap-2">
-        <LedSign />
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-muted">{locale === "en-US" ? "Today" : "Hoje"}</p>
-        <h1>{new Intl.DateTimeFormat(locale, { dateStyle: "full", timeZone: "Europe/Lisbon" }).format(new Date(`${today}T12:00:00Z`))}</h1>
-        <p className="max-w-2xl text-sm text-muted">
-          {locale === "en-US" ? "Saved games and results. The summary refers to today; lists also include recent results and upcoming dates. Updates run independently of this page." : locale === "pt-BR" ? "Partidas e resultados salvos. O resumo é de hoje; as listas também incluem resultados recentes e próximas datas. A atualização é independente desta página." : "Jogos e resultados guardados. O resumo refere-se a hoje; as listas incluem também resultados recentes e próximas datas. A atualização é independente desta página."}
-        </p>
-      </header>
-
-      <section className="grid gap-3 sm:grid-cols-3" aria-label={t("Jogos de hoje")}>
-        <Count label={t("Em direto")} value={summary.live} href={homeHref("/jogos", locale)} />
-        <Count label={t("Por disputar")} value={summary.upcoming} href={homeHref("/jogos", locale)} />
-        <Count label={t("Terminados")} value={summary.finished} href={homeHref("/jogos", locale)} />
+    <div className="home-page" data-home-ready>
+      <nav className="sport-strip" aria-label={t("Acesso rápido")}>
+        <Link href={homeHref("/jogos", locale)} className="sport-strip__active"><span aria-hidden="true">⚽</span>{t("Jogos")}</Link>
+        <Link href={homeHref("/competicoes", locale)}>{t("Competições")}</Link>
+        <Link href={homeHref("/avaliacao", locale)}>{t("Estatísticas")}</Link>
+        <span className="sport-strip__note">{locale === "en-US" ? "The game, in perspective" : locale === "pt-BR" ? "Uma nova perspectiva do jogo" : "Uma nova perspetiva do jogo"}</span>
+      </nav>
+      <div className="home-dashboard">
+        <div className="home-center">
+          <section className="premium-panel daily-board" aria-labelledby="daily-title">
+            <div className="panel-heading">
+              <div><p className="panel-kicker">{locale === "en-US" ? "MATCH CENTER" : "CENTRO DE JOGO"}</p><h1 id="daily-title">{locale === "en-US" ? "Games & results" : locale === "pt-BR" ? "Partidas e resultados" : "Jogos e resultados"}</h1></div>
+              <Link href={homeHref("/jogos", locale)} className="panel-action">{t("Ver o quadro")} ↗</Link>
+            </div>
+            <p className="board-date">{new Intl.DateTimeFormat(locale, { dateStyle: "full", timeZone: "Europe/Lisbon" }).format(new Date(`${today}T12:00:00Z`))}</p>
+            <div className="daily-counters" aria-label={t("Jogos de hoje")}>
+              <Count label={t("Em direto")} value={summary.live} href={homeHref("/jogos", locale)} />
+              <Count label={t("Por disputar")} value={summary.upcoming} href={homeHref("/jogos", locale)} />
+              <Count label={t("Terminados")} value={summary.finished} href={homeHref("/jogos", locale)} />
+            </div>
+            <p className="data-notice board-context">{locale === "en-US" ? "Today's summary. Lists include saved recent results and upcoming dates; updates run independently." : locale === "pt-BR" ? "Resumo de hoje. As listas incluem resultados recentes e próximas datas salvos; a atualização é independente." : "Resumo de hoje. As listas incluem resultados recentes e próximas datas guardados; a atualização é independente."}</p>
+            <MatchSection title={t("Em direto")} action={t("Ver o quadro")} empty={locale === "en-US" ? "No games saved as live today." : locale === "pt-BR" ? "Nenhuma partida salva como ao vivo hoje." : "Não há jogos guardados como em direto hoje."} matches={live} locale={locale} />
+            <MatchSection title={locale === "en-US" ? "Upcoming games" : "Próximos jogos"} action={t("Ver o quadro")} empty={locale === "en-US" ? "No upcoming games saved." : locale === "pt-BR" ? "Nenhuma próxima partida salva." : "Não há próximos jogos guardados."} matches={upcoming} locale={locale} />
+            <MatchSection title={locale === "en-US" ? "Recent results" : "Resultados recentes"} action={t("Ver o quadro")} empty={locale === "en-US" ? "No saved results available." : locale === "pt-BR" ? "Nenhum resultado salvo disponível." : "Não há resultados guardados disponíveis."} matches={finished} locale={locale} />
+            <div className="board-footnote"><span className="signal-dot" /><p>{t("Os estados apresentados são os guardados, incluindo jogos de datas anteriores ainda marcados como em direto.")}</p></div>
+            <Link href={homeHref("/jogos", locale)} className="board-all-link">{t("Ver jogos, incluindo adiados e cancelados")} ↗</Link>
+          </section>
+          <Suspense fallback={<p className="premium-panel p-5 text-muted">{t("Notícias")}…</p>}><HomeNews locale={locale} /></Suspense>
+        </div>
+        <aside className="home-right" aria-label={t("Análises")}>
+          {lead ? <Lead match={lead} locale={locale} /> : <section className="premium-panel intelligence-card"><h2>{t("Análise de jogos")}</h2><p>{t("Não há jogos em destaque guardados.")}</p><Link href={homeHref("/jogos", locale)}>{t("Escolher um jogo")} ↗</Link></section>}
+          <Suspense fallback={<p className="premium-panel p-5 text-muted">{t("Classificação")}…</p>}><HomeStandings catalog={catalog} locale={locale} /></Suspense>
+          <section className="premium-panel intelligence-card">
+            <p className="panel-kicker">{locale === "en-US" ? "BEHIND THE NUMBERS" : "POR TRÁS DOS NÚMEROS"}</p>
+            <h2>{locale === "en-US" ? "A complete view of every game." : locale === "pt-BR" ? "Uma visão completa de cada partida." : "Uma visão completa de cada jogo."}</h2>
+            <p>{locale === "en-US" ? "Team strength, recent form, head-to-head and comparative charts. 1X2 probabilities appear on the game page only when the existing model has sufficient data." : locale === "pt-BR" ? "Força dos times, forma recente, confrontos diretos e gráficos comparativos. As probabilidades 1X2 aparecem na ficha da partida apenas quando o modelo tem dados suficientes." : "Força das equipas, forma recente, confrontos diretos e gráficos comparativos. As probabilidades 1X2 aparecem na ficha do jogo apenas quando o modelo tem dados suficientes."}</p>
+            <ul className="analysis-topics"><li>{t("Probabilidades")} · 1 / X / 2</li><li>{t("Confrontos diretos")}</li><li>{t("Últimos jogos")}</li></ul>
+            <Link href={homeHref(lead ? `/jogos/${lead.externalId}` : "/analise", locale)}>{t("Abrir a análise")} ↗</Link>
+          </section>
+        </aside>
+      </div>
+      <section className="premium-panel competitions-section">
+        <SectionHead title={t("Competições")} href="/competicoes" action={t("Ver todas")} locale={locale} />
+        {featuredCompetitions.length === 0 ? <p className="editorial-empty">{t("Não há competições guardadas.")}</p> : <ul className="competition-grid">
+          {featuredCompetitions.map(competition => <li key={competition.code}><CompetitionLink href={homeHref(`/competicoes/${competition.code}`, locale)} name={competition.name} emblemUrl={competition.emblemUrl} detail={t(formatCountry(competition.country))} meta={t("Classificação")} /></li>)}
+        </ul>}
       </section>
-
-      {lead ? <Lead match={lead} locale={locale} /> : <p className="text-sm text-muted">{t("Não há jogos em destaque guardados.")}</p>}
-
-      <MatchSection title={locale === "en-US" ? "Recent results" : "Resultados recentes"} action={t("Ver o quadro")} empty={locale === "en-US" ? "No saved results available." : "Não há resultados guardados disponíveis."} matches={finished} locale={locale} />
-      <p className="text-xs text-muted">{t("Os estados apresentados são os guardados, incluindo jogos de datas anteriores ainda marcados como em direto.")}</p>
-      <Link href={homeHref("/jogos", locale)} className="text-sm text-accent underline">{t("Ver jogos, incluindo adiados e cancelados")}</Link>
-      <div className="grid gap-8 lg:grid-cols-2">
-        <MatchSection title={t("Em direto")} action={t("Ver o quadro")} empty={locale === "en-US" ? "No games saved as live today." : "Não há jogos guardados como em direto hoje."} matches={live} locale={locale} />
-        <MatchSection title={locale === "en-US" ? "Upcoming games" : "Próximos jogos"} action={t("Ver o quadro")} empty={locale === "en-US" ? "No upcoming games saved." : "Não há próximos jogos guardados."} matches={upcoming} locale={locale} />
-      </div>
-
-      <div className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr]">
-        <section className="grid content-start gap-3">
-          <SectionHead title={t("Competições")} href="/competicoes" action={t("Ver todas")} locale={locale} />
-          {featuredCompetitions.length === 0 ? (
-            <p className="text-sm text-muted">{t("Não há competições guardadas.")}</p>
-          ) : (
-            <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {featuredCompetitions.map((competition) => (
-                <li key={competition.code} className="h-full">
-                  <CompetitionLink
-                    href={homeHref(`/competicoes/${competition.code}`, locale)}
-                    name={competition.name}
-                    emblemUrl={competition.emblemUrl}
-                    detail={t(formatCountry(competition.country))}
-                    meta={t("Classificação")}
-                  />
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-        <Suspense fallback={<p className="text-sm text-muted">{t("Classificação")}…</p>}>
-          <HomeStandings catalog={catalog} locale={locale} />
-        </Suspense>
-      </div>
-
-      <div className="grid gap-8 lg:grid-cols-[1.4fr_0.8fr]">
-        <Suspense fallback={<p className="text-sm text-muted">{t("Notícias")}…</p>}>
-          <HomeNews locale={locale} />
-        </Suspense>
-        <section className="grid content-start gap-3 border border-line bg-card p-4">
-          <h2 className="font-serif text-2xl">{t("Análises")}</h2>
-          <p className="text-sm text-muted">
-            {locale === "en-US" ? "Team comparisons, recent form, and 1X2 predictions appear on each game's page. Predictions appear only when the model has enough data." : locale === "pt-BR" ? "A comparação dos times, a forma recente e a previsão 1X2 ficam na página de cada partida. A previsão só aparece quando o modelo tem dados suficientes." : "A comparação das equipas, a forma recente e a estimativa 1X2 estão na ficha de cada jogo. A estimativa só aparece quando o modelo tem dados suficientes."}
-          </p>
-          <Link href={homeHref(lead ? `/jogos/${lead.externalId}` : "/jogos", locale)} className="btn w-fit">
-            {lead ? (locale === "en-US" ? "Open featured preview" : locale === "pt-BR" ? "Ver análise do destaque" : "Abrir a análise do destaque") : t("Escolher um jogo")}
-          </Link>
-        </section>
-      </div>
-
-      <Suspense fallback={<p className="text-sm text-muted">{t("Leituras")}…</p>}>
-        <HomeArticles locale={locale} />
-      </Suspense>
-
-      <section className="grid gap-3">
-        <h2 className="border-b border-line pb-2 font-serif text-2xl">{t("Acesso rápido")}</h2>
-        <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {shortcuts.map((item) => (
-            <li key={item.href}>
-              <Link href={homeHref(item.href, locale)} className="grid h-full gap-1 border border-line bg-card px-4 py-3 hover:bg-raised">
-                <span className="font-serif text-xl text-foreground">{t(item.label)}</span>
-                <span className="text-sm text-muted">{t(item.text)}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+      <Suspense fallback={<p className="premium-panel p-5 text-muted">{t("Leituras")}…</p>}><HomeArticles locale={locale} /></Suspense>
+      <section className="premium-panel shortcuts-section">
+        <SectionHead title={t("Acesso rápido")} href="/jogos" action={t("Ver o quadro")} locale={locale} />
+        <ul className="shortcut-grid">{shortcuts.map(item => <li key={item.href}><Link href={homeHref(item.href, locale)}><span>{t(item.label)}</span><small>{t(item.text)}</small><span aria-hidden="true">↗</span></Link></li>)}</ul>
       </section>
     </div>
   );
@@ -160,7 +127,7 @@ async function standingsPreview(catalog: Awaited<ReturnType<typeof listCompetiti
 
 function SectionHead({ title, href, action, locale = "pt-PT" }: { title: string; href: string; action: string; locale?: Locale }) {
   return (
-    <div className="flex items-baseline justify-between gap-3 border-b border-line pb-2">
+    <div className="section-heading">
       <h2 className="font-serif text-2xl">{homeText(locale, title)}</h2>
       <Link href={homeHref(href, locale)} className="text-sm text-accent underline-offset-4 hover:underline">
         {homeText(locale, action)}
@@ -172,7 +139,7 @@ function SectionHead({ title, href, action, locale = "pt-PT" }: { title: string;
 function Count({ label, value, href }: { label: string; value: number; href: string }) {
   return (
     <Reveal>
-      <Link href={href} className="stat-card block border border-line bg-card px-4 py-3 hover:bg-raised">
+      <Link href={href} className="daily-counter">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted">{label}</p>
         <p className="mt-1 font-serif text-3xl text-primary">
           <CountUp value={value} kind="int" />
@@ -187,12 +154,12 @@ function Lead({ match, locale }: { match: DayMatch; locale: Locale }) {
   const group = matchGroup(match.status);
   const kicker = group === "live" ? t("Em direto") : group === "upcoming" ? t("Próximo jogo") : (locale === "en-US" ? "Recent result" : locale === "pt-BR" ? "Resultado recente" : "Resultado recente");
   return (
-    <article className="border border-line bg-card p-4 sm:p-5">
+    <article className="premium-panel featured-match">
       <p className="text-xs font-semibold uppercase tracking-wide text-accent">{t("Destaque")} · {kicker}</p>
       <p className="mt-2 text-sm text-muted">{match.competitionName}</p>
-      <div className="mt-4 grid items-center gap-3 sm:grid-cols-[1fr_auto_1fr]">
+      <div className="featured-match__teams">
         <Team name={match.homeName} crest={match.homeCrest} />
-        <p className="font-serif text-4xl tabular text-primary sm:text-center">{scoreLabel(match, locale)}</p>
+        <p className="featured-match__score tabular">{scoreLabel(match, locale)}</p>
         <Team name={match.awayName} crest={match.awayCrest} align="end" />
       </div>
       <p className="mt-3 text-sm text-muted">
@@ -209,9 +176,9 @@ function Lead({ match, locale }: { match: DayMatch; locale: Locale }) {
 
 function Team({ name, crest, align = "start" }: { name: string; crest: string | null; align?: "start" | "end" }) {
   return (
-    <p className={`flex items-center gap-3 ${align === "end" ? "sm:flex-row-reverse sm:text-right" : ""}`}>
+    <p className={`featured-team ${align === "end" ? "featured-team--away" : ""}`}>
       <Crest src={crest} name={name} />
-      <span className="font-serif text-2xl">{name}</span>
+      <span>{name}</span>
     </p>
   );
 }
@@ -231,24 +198,22 @@ function MatchSection({
 }) {
   const t = (text: string) => homeText(locale, text);
   return (
-    <section className="grid content-start gap-3">
+    <section className="home-matches">
       <SectionHead title={title} href="/jogos" action={action} locale={locale} />
       {matches.length === 0 ? (
-        <p className="text-sm text-muted">{empty}</p>
+        <p className="board-empty">{empty}</p>
       ) : (
-        <ul className="divide-y divide-line border border-line bg-card">
+        <ul className="home-match-list">
           {matches.map((match) => (
             <li key={match.externalId}>
-              <Link href={homeHref(`/jogos/${match.externalId}`, locale)} className="grid grid-cols-[7rem_1fr_auto] items-center gap-3 px-3 py-3 text-sm hover:bg-raised">
-                <span className="text-muted">{homeDateTime(match.utcDate, locale)}</span>
+              <Link href={homeHref(`/jogos/${match.externalId}`, locale)} className="home-match-row home-match-row--saved">
+                <span className="home-match-row__time">{homeDateTime(match.utcDate, locale)}</span>
                 <span className="min-w-0">
-                  <span className="block truncate">
-                    {match.homeName} – {match.awayName}
-                  </span>
+                  <span className="home-match-row__teams"><span><Crest src={match.homeCrest} name={match.homeName} />{match.homeName}</span><span><Crest src={match.awayCrest} name={match.awayName} />{match.awayName}</span></span>
                   <span className="mt-0.5 block text-xs text-muted">{homeResultDetails(match, locale).join(" · ")}</span>
                   <span className="mt-0.5 block text-xs text-muted">{match.competitionName} · {t(formatStatus(match.status))} · {locale === "en-US" ? "Updated:" : "Atualizado:"} {homeDateTime(match.fetchedAt, locale)}</span>
                 </span>
-                <span className="font-semibold tabular text-primary">{scoreLabel(match, locale)}</span>
+                <span className={`score-pill ${matchGroup(match.status) === "live" ? "score-pill--live" : ""}`}>{scoreLabel(match, locale)}</span>
               </Link>
             </li>
           ))}
@@ -267,10 +232,10 @@ function StandingsPreview({
 }) {
   const t = (text: string) => homeText(locale, text);
   return (
-    <section className="grid content-start gap-3">
+    <section className="premium-panel standings-panel">
       <SectionHead title={t("Classificação")} href={`/competicoes/${table.code}`} action={t("Tabela completa")} locale={locale} />
-      <div className="overflow-x-auto border border-line bg-card">
-        <table className="w-full min-w-[18rem] text-left text-sm">
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
           <caption className="px-3 py-2 text-left text-xs font-semibold uppercase tracking-wide text-muted">{table.name}</caption>
           <thead>
             <tr>
@@ -313,14 +278,14 @@ async function HomeNews({ locale }: { locale: Locale }) {
   const t = (text: string) => homeText(locale, text);
   const news = (await readNews()).slice(0, 3);
   return (
-    <section className="grid content-start gap-3">
+    <section className="premium-panel editorial-section">
       <SectionHead title={t("Notícias")} href="/noticias" action={t("Ver notícias")} locale={locale} />
       {news.length === 0 ? (
         <p className="border border-line bg-card px-4 py-6 text-sm text-muted">{t("Não há notícias relevantes confirmadas encontradas.")}</p>
       ) : (
-        <ul className="grid gap-3">
+        <ul className="news-list">
           {news.map((item, index) => (
-            <li key={item.id} className="border border-line bg-card p-4">
+            <li key={item.id}><span className="news-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><div>
               <p className="text-xs font-semibold uppercase tracking-wide text-muted">
                 {item.sourceName} · {locale === "en-US" ? "Unconfirmed" : "Não confirmado"}
               </p>
@@ -329,7 +294,7 @@ async function HomeNews({ locale }: { locale: Locale }) {
                   {item.title}
                 </a>
               </h3>
-              <p className="mt-2 text-sm text-muted">{item.summary}</p>
+              <p className="mt-2 text-sm text-muted">{item.summary}</p></div>
             </li>
           ))}
         </ul>
@@ -342,22 +307,22 @@ async function HomeArticles({ locale }: { locale: Locale }) {
   const t = (text: string) => homeText(locale, text);
   const articles = (await publicArticles()).slice(0, 3);
   return articles.length > 0 ? (
-    <section className="grid gap-3">
+    <section className="reading-section">
       <SectionHead title={t("Leituras")} href="/blog" action={t("Ver os artigos")} locale={locale} />
       <p className="text-sm text-muted">{locale === "en-US" ? "Football news and analysis with identified sources. Sample articles are labelled." : "Notícias e análises de futebol com fontes identificadas. Os artigos de exemplo estão assinalados."}</p>
-      <ul className="grid gap-4 lg:grid-cols-3">
+      <ul className="reading-grid">
         {articles.map((article) => (
           <li key={article.slug}>
-            <article className="grid h-full gap-3 border border-line bg-card p-3">
+            <article className="premium-panel reading-card">
               {article.coverImage?.provider === "local-ai" ? <EditorialImage image={article.coverImage} /> : <Cover scene={article.cover} label={article.title} />}
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted">{article.category}</p>
+              <div className="reading-card__body"><p className="panel-kicker">{article.category}</p>
               <h3 className="font-serif text-xl">
                 <Link href={homeHref(`/blog/${article.slug}`, locale)} className="hover:underline">
                   {article.title}
                 </Link>
               </h3>
               <p className="text-sm text-muted">{article.summary}</p>
-              <p className="text-xs text-muted">{new Intl.DateTimeFormat(locale, { timeZone: "Europe/Lisbon", dateStyle: "medium" }).format(new Date(article.publishedAt))}{article.example ? ` · ${t("Artigo de exemplo")}` : article.editorialType === "news" ? ` · ${locale === "en-US" ? "Editorial news" : "Notícia editorial"}` : ""}</p>
+              <p className="text-xs text-muted">{new Intl.DateTimeFormat(locale, { timeZone: "Europe/Lisbon", dateStyle: "medium" }).format(new Date(article.publishedAt))}{article.example ? ` · ${t("Artigo de exemplo")}` : article.editorialType === "news" ? ` · ${locale === "en-US" ? "Editorial news" : "Notícia editorial"}` : ""}</p></div>
             </article>
           </li>
         ))}
