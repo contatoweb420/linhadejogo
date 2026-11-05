@@ -2,6 +2,7 @@ import { sql } from "drizzle-orm";
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
+import { connectionOptions, databaseFailure } from "./connection";
 
 type Database = PostgresJsDatabase<typeof schema>;
 
@@ -15,25 +16,25 @@ export function databaseUrl() {
 }
 
 export function getDb() {
-  const url = databaseUrl();
-  if (!url) {
-    throw new Error("DATABASE_URL em falta");
-  }
   if (!globalForSql.sql) {
-    globalForSql.sql = postgres(url, { max: 8, connect_timeout: 5 });
+    const { url, options } = connectionOptions(databaseUrl());
+    globalForSql.sql = postgres(url, options);
+  }
+  if (!globalForSql.db) {
     globalForSql.db = drizzle(globalForSql.sql, { schema });
   }
   return globalForSql.db!;
 }
 
 export async function pingDatabase() {
-  const url = databaseUrl();
-  if (!url) return false;
   try {
     const db = getDb();
     await db.execute(sql`select id from sports limit 1`);
     return true;
-  } catch {
+  } catch (error) {
+    // Log only allowlisted codes, including Drizzle's wrapped driver cause.
+    // Never log the error object, message, SQL, URI, or credentials.
+    console.error("[database] health check failed", databaseFailure(error));
     return false;
   }
 }
