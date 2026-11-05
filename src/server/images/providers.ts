@@ -16,6 +16,19 @@ export type EditorialImage = {
   checkedAt: string;
 };
 
+/** Manually supplied artwork; it does not claim photographic provenance or a stock licence. */
+export type LocalEditorialIllustration = {
+  provider: "local-ai";
+  imageUrl: `/${string}`;
+  alt: string;
+  caption: string;
+  width: number;
+  height: number;
+  licenseVerified: false;
+};
+
+export type ArticleImage = EditorialImage | LocalEditorialIllustration;
+
 type ImageSearchResult = { items: EditorialImage[]; limited: boolean };
 
 const CACHE_TTL_MS = 30 * 60_000;

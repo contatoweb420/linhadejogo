@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, gte, ilike, lt, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, ilike, inArray, isNotNull, isNull, lt, lte, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 import { getDb } from "./db/client";
 import {
@@ -27,6 +27,80 @@ export async function listCompetitions() {
 
 const homeSide = alias(teams, "home_side");
 const awaySide = alias(teams, "away_side");
+
+/** Presentation only. These limits must never be used as model samples. */
+export async function listHomeMatches(group: "finished" | "live" | "upcoming", now: Date) {
+  const filters = [eq(matches.source, SOURCE_ID)];
+  if (group === "finished") {
+    filters.push(eq(matches.status, "FINISHED"), lt(matches.utcDate, now),
+      isNotNull(matches.regularHome), isNotNull(matches.regularAway));
+  } else if (group === "live") {
+    // Include ongoing matches across midnight. The UI labels their actual date
+    // and last update, rather than claiming every saved live state is today's.
+    filters.push(inArray(matches.status, ["IN_PLAY", "PAUSED"]),
+      lte(matches.utcDate, now));
+  } else {
+    filters.push(inArray(matches.status, ["SCHEDULED", "TIMED"]), gte(matches.utcDate, now));
+  }
+  return getDb()
+    .select({
+      externalId: matches.externalId,
+      utcDate: matches.utcDate,
+      status: matches.status,
+      regularHome: matches.regularHome,
+      regularAway: matches.regularAway,
+      duration: matches.duration,
+      ftHome: matches.ftHome,
+      ftAway: matches.ftAway,
+      etHome: matches.etHome,
+      etAway: matches.etAway,
+      penHome: matches.penHome,
+      penAway: matches.penAway,
+      fetchedAt: matches.fetchedAt,
+      competitionName: competitions.name,
+      homeName: homeSide.name,
+      homeCrest: homeSide.crestUrl,
+      awayName: awaySide.name,
+      awayCrest: awaySide.crestUrl,
+    })
+    .from(matches)
+    .innerJoin(competitions, eq(matches.competitionId, competitions.id))
+    .innerJoin(homeSide, eq(matches.homeTeamId, homeSide.id))
+    .innerJoin(awaySide, eq(matches.awayTeamId, awaySide.id))
+    .where(and(...filters))
+    .orderBy(...(group === "live" ? [desc(matches.fetchedAt), desc(matches.utcDate)]
+      : [group === "finished" ? desc(matches.utcDate) : asc(matches.utcDate)]), asc(matches.id))
+    .limit(6);
+}
+
+/** Homepage preview only; keep other standings consumers unchanged. */
+export async function homeStandings(competitionId: number) {
+  const db = getDb();
+  const [latest] = await db.select({ seasonId: standings.seasonId })
+    .from(standings).leftJoin(seasons, eq(standings.seasonId, seasons.id))
+    .where(and(eq(standings.competitionId, competitionId), eq(standings.tableType, "TOTAL")))
+    .orderBy(sql`${seasons.startDate} desc nulls last`, desc(standings.fetchedAt), desc(standings.seasonId))
+    .limit(1);
+  if (!latest) return [];
+  return db.select({
+    position: standings.position, played: standings.played, points: standings.points,
+    teamName: teams.name, teamExternalId: teams.externalId, crestUrl: teams.crestUrl,
+  }).from(standings).innerJoin(teams, eq(standings.teamId, teams.id))
+    .where(and(eq(standings.competitionId, competitionId), eq(standings.tableType, "TOTAL"),
+      latest.seasonId == null ? isNull(standings.seasonId) : eq(standings.seasonId, latest.seasonId)))
+    .orderBy(asc(standings.groupName), asc(standings.position));
+}
+
+export async function homeDaySummary(day: string) {
+  const bounds = lisbonDayBounds(day);
+  const [row] = await getDb().select({
+    live: sql<number>`count(*) filter (where ${matches.status} in ('IN_PLAY', 'PAUSED'))::int`,
+    upcoming: sql<number>`count(*) filter (where ${matches.status} in ('SCHEDULED', 'TIMED'))::int`,
+    finished: sql<number>`count(*) filter (where ${matches.status} = 'FINISHED')::int`,
+  }).from(matches).where(and(eq(matches.source, SOURCE_ID),
+    gte(matches.utcDate, bounds.start), lt(matches.utcDate, bounds.end)));
+  return row ?? { live: 0, upcoming: 0, finished: 0 };
+}
 
 export async function listMatchesForDay(day: string, competitionCode?: string, country?: string) {
   const db = getDb();

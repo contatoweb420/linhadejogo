@@ -1014,3 +1014,33 @@ tbody td {
   100% { opacity: 0.2; }
 }
 
+
+/* Match analysis: local palette preserves the surrounding site theme. */
+.match-analysis {
+  --primary: #4285ff;
+  --warning: #dcb663;
+  --surface: #0c172a;
+  --card: #0c172a;
+  --raised: #14233b;
+  --background: #071020;
+  --border: #263751;
+  --line: #263751;
+  --muted: #a8b7ce;
+  --foreground: #eef4ff;
+  color: var(--foreground);
+}
+.match-analysis .analysis-card {
+  height: 100%;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: linear-gradient(145deg, #112039, #0a1426 70%);
+  box-shadow: 0 12px 32px #02061130, inset 0 1px 0 #7faaff0a;
+}
+.match-analysis .analysis-metric {
+  border: 1px solid #26375180;
+  border-radius: 10px;
+  padding: 12px;
+  background: #07102066;
+}
+.match-analysis button:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; border-radius: 4px; }

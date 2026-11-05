@@ -11,12 +11,12 @@ describe("blog local", () => {
 
   it("destaca o mais recente e pagina o resto", () => {
     const listing = queryArticles({});
-    expect(listing.featured?.slug).toBe("como-ler-uma-estimativa");
+    expect(listing.featured?.slug).toBe("cristiano-ronaldo-despede-se-selecao-portuguesa");
     expect(listing.items).toHaveLength(4);
     expect(listing.pages).toBe(2);
     const second = queryArticles({ page: 2 });
     expect(second.featured).toBeNull();
-    expect(second.items).toHaveLength(1);
+    expect(second.items).toHaveLength(2);
     expect(second.items.some((article) => article.slug === listing.featured?.slug)).toBe(false);
   });
 

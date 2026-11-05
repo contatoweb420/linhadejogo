@@ -16,23 +16,27 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   if (!article) return { title: "Artigo não encontrado", robots: { index: false, follow: false } };
   const siteUrl = getSiteUrl();
   const canonical = siteUrl ? new URL(`/blog/${article.slug}`, siteUrl).toString() : undefined;
-  const shareImage = siteUrl ? new URL("/marca/linha-de-jogo-nova.jpg", siteUrl).toString() : undefined;
+  const artwork = article.coverImage?.provider === "local-ai" ? article.coverImage : null;
+  const shareImagePath = artwork?.imageUrl ?? "/marca/linha-de-jogo-nova.jpg";
+  const shareImage = siteUrl ? new URL(shareImagePath, siteUrl).toString() : artwork ? shareImagePath : undefined;
   return {
-    title: article.seoTitle || article.title,
+    title: article.editorialType === "news" ? { absolute: article.seoTitle || article.title } : article.seoTitle || article.title,
     description: article.seoDescription || article.summary,
+    ...(article.editorialType === "news" ? { keywords: article.seoKeyword ? [article.seoKeyword, ...(article.tags ?? [])] : article.tags } : {}),
     alternates: canonical ? { canonical } : undefined,
     openGraph: {
       type: "article",
       url: canonical,
-      title: article.seoTitle || article.title,
+      title: article.editorialType === "news" ? article.title : article.seoTitle || article.title,
       description: article.seoDescription || article.summary,
       publishedTime: article.publishedAt,
       modifiedTime: article.updatedAt,
-      images: shareImage ? [{ url: shareImage, width: 1024, height: 520, alt: article.title }] : undefined,
+      images: shareImage ? [{ url: shareImage, width: artwork?.width ?? 1024, height: artwork?.height ?? 520, alt: artwork?.alt ?? article.title }] : undefined,
+      ...(article.editorialType === "news" ? { section: article.category, tags: article.tags } : {}),
     },
     twitter: {
       card: "summary_large_image",
-      title: article.seoTitle || article.title,
+      title: article.editorialType === "news" ? article.title : article.seoTitle || article.title,
       description: article.seoDescription || article.summary,
       images: shareImage ? [shareImage] : undefined,
     },
@@ -43,6 +47,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const article = await publicArticle(slug);
   if (!article) notFound();
+  const news = article.editorialType === "news";
 
   return (
     <article className="mx-auto grid max-w-3xl gap-5">
@@ -54,27 +59,34 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
       <p className="border border-line bg-card px-4 py-3 text-sm">
         {article.example
           ? "Artigo de exemplo. Não descreve um jogo, um resultado nem uma notícia reais."
+          : news ? "Notícia editorial · Fontes identificadas no final do artigo."
           : "Análise escrita com números guardados na Linha de Jogo. Descreve o que já está na tabela e não é uma previsão."}
       </p>
       <header className="grid gap-3">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted">{article.category}</p>
-        <h1>{article.title}</h1>
+        <h1 className={article.slug === "cristiano-ronaldo-despede-se-selecao-portuguesa"
+          ? "my-2 font-serif text-[clamp(2rem,5vw,3.5rem)] font-bold leading-[1.12] tracking-tight text-balance break-words"
+          : undefined}>{article.title}</h1>
+        {news ? <p className="border-l-2 border-accent pl-4 text-lg leading-8 text-muted">{article.summary}</p> : null}
         <p className="text-sm text-muted">
           {article.author} · Publicado em <time dateTime={article.publishedAt}>{formatArticleDate(article.publishedAt)}</time>
           {" · "}Atualizado em <time dateTime={article.updatedAt}>{formatArticleDate(article.updatedAt)}</time>
         </p>
       </header>
-      {article.coverImage?.licenseVerified ? <EditorialImage image={article.coverImage} /> : <Cover scene={article.cover} label={article.title} />}
-      <p className="text-base leading-7">{article.summary}</p>
-      <figure className="grid gap-2">
+      {article.coverImage && (article.coverImage.provider === "local-ai" || article.coverImage.licenseVerified) ? <EditorialImage image={article.coverImage} /> : <Cover scene={article.cover} label={article.title} />}
+      {!news ? <p className="text-base leading-7">{article.summary}</p> : null}
+      {!news ? <figure className="grid gap-2">
         <Cover scene={inlineScene(article.cover)} label={illustrationAlt(inlineScene(article.cover))} />
         <figcaption className="text-xs text-muted">Ilustração de contexto; não representa um jogo ou uma fotografia real.</figcaption>
-      </figure>
-      <div className="reading grid gap-4 text-sm">
+      </figure> : null}
+      <div className={news ? "reading grid gap-6 text-[17px] sm:text-lg" : "reading grid gap-4 text-sm"}>
         {article.blocks.map((block, index) => (
-          <Block key={`${block.type}-${index}`} block={block} />
+          <Block key={`${block.type}-${index}`} block={block} editorial={news} />
         ))}
       </div>
+      {news && article.tags?.length ? <ul aria-label="Etiquetas" className="flex flex-wrap gap-2">
+        {article.tags.map(tag => <li key={tag} className="rounded-full border border-line bg-card px-3 py-1 text-xs text-accent">{tag}</li>)}
+      </ul> : null}
       <section className="grid gap-2 border-t border-line pt-4">
         <h2 className="text-base">Partilhar</h2>
         <ShareArticle title={article.title} />
@@ -84,7 +96,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <ul className="grid gap-2 text-sm text-muted">
           {article.sources.map((source) => (
             <li key={source.name}>
-              {source.name}. {source.note}
+              {source.url ? <a className="text-accent underline underline-offset-4" href={source.url} rel="noreferrer">{source.name}</a> : source.name}. {source.note}
             </li>
           ))}
         </ul>
@@ -117,11 +129,11 @@ function illustrationAlt(scene: string) {
   return descriptions[scene] ?? "Ilustração editorial de futebol";
 }
 
-function Block({ block }: { block: ArticleBlock }) {
-  if (block.type === "h2") return <h2 className="text-xl">{block.text}</h2>;
+function Block({ block, editorial = false }: { block: ArticleBlock; editorial?: boolean }) {
+  if (block.type === "h2") return <h2 className={editorial ? "mt-4 border-b border-line pb-3 font-serif text-2xl text-foreground" : "text-xl"}>{block.text}</h2>;
   if (block.type === "ul") {
     return (
-      <ul className="list-disc space-y-1 pl-5">
+      <ul className={editorial ? "list-disc space-y-3 border-l-2 border-accent bg-card py-4 pl-8 pr-4 font-semibold" : "list-disc space-y-1 pl-5"}>
         {block.items.map((item) => (
           <li key={item}>{item}</li>
         ))}

@@ -7,7 +7,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { BrandMark } from "@/components/brand-mark";
 import { HudLoader } from "@/components/hud-loader";
-import { translate, type Locale } from "@/lib/i18n";
+import { localePrefix, translate, type Locale } from "@/lib/i18n";
 import { LocaleProvider } from "@/components/locale-context";
 
 const STORAGE_KEY = "quadrante.menu";
@@ -68,6 +68,7 @@ export function AppShell({ children, locale }: { children: ReactNode; locale: Lo
   const t = (text: string) => translate(locale, text);
   const collapsed = useSyncExternalStore(subscribe, readCollapsed, () => false);
   const pathname = usePathname();
+  const home = stripLocale(pathname) === "/";
   const [hud, setHud] = useState<{ progress: number; phase: "loading" | "exit"; label: string } | null>({
     progress: 8,
     phase: "loading",
@@ -78,21 +79,30 @@ export function AppShell({ children, locale }: { children: ReactNode; locale: Lo
   const hideHudTimer = useRef<number | null>(null);
 
   useEffect(() => {
+    let finished = false;
     const finishInitialLoad = () => {
-      if (pendingNavigation.current) return;
+      if (finished || pendingNavigation.current) return;
+      if (home && !document.querySelector("[data-home-ready]")) return;
+      finished = true;
+      observer.disconnect();
       pendingNavigation.current = false;
       setHud((current) => current ? { ...current, progress: 100, phase: "exit" } : null);
       hideHudTimer.current = window.setTimeout(() => setHud(null), 440);
     };
 
-    if (document.readyState === "complete") finishInitialLoad();
+    const observer = new MutationObserver(finishInitialLoad);
+    if (home) {
+      observer.observe(document.body, { childList: true, subtree: true });
+      finishInitialLoad();
+    } else if (document.readyState === "complete") finishInitialLoad();
     else window.addEventListener("load", finishInitialLoad, { once: true });
 
     return () => {
+      observer.disconnect();
       window.removeEventListener("load", finishInitialLoad);
       if (hideHudTimer.current !== null) window.clearTimeout(hideHudTimer.current);
     };
-  }, []);
+  }, [home]);
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -168,7 +178,7 @@ export function AppShell({ children, locale }: { children: ReactNode; locale: Lo
       </main>
       <SiteFooter locale={locale} />
       <MobileNav pathname={stripLocale(pathname)} locale={locale} />
-      {hud ? <HudLoader variant="full" progress={hud.progress} phase={hud.phase} label={hud.label} /> : null}
+      {hud ? <HudLoader variant={home ? "compact" : "full"} progress={hud.progress} phase={hud.phase} label={hud.label} /> : null}
     </div>
     </LocaleProvider>
   );
@@ -181,7 +191,7 @@ function Sidebar({ collapsed, pathname, locale }: { collapsed: boolean; pathname
       className={`chrome nav-aside fixed inset-y-0 left-0 z-40 hidden h-screen flex-col border-r border-line shadow-[4px_0_24px_rgb(0_0_0/0.18)] md:flex ${collapsed ? "w-[4.5rem]" : "w-60"}`}
     >
       <div className={`flex items-center border-b border-line px-3 py-4 ${collapsed ? "justify-center" : ""}`}>
-        <Link href="/" className={`brand-lockup min-w-0 ${collapsed ? "justify-center" : "w-full"}`} aria-label="Linha de Jogo, visão geral">
+        <Link href={localePrefix(locale)} className={`brand-lockup min-w-0 ${collapsed ? "justify-center" : "w-full"}`} aria-label="Linha de Jogo, visão geral">
           <BrandMark compact={collapsed} />
         </Link>
       </div>
@@ -207,13 +217,13 @@ function Sidebar({ collapsed, pathname, locale }: { collapsed: boolean; pathname
           {collapsed ? <span className="sr-only">Premium · {t("Não disponível")}</span> : <span>Premium · {t("Não disponível")}</span>}
         </p>
         <Link
-          href="/sobre"
+          href={`${localePrefix(locale)}/sobre`}
           aria-current={pathname.startsWith("/sobre") ? "page" : undefined}
           title={collapsed ? "Sobre" : undefined}
           className={linkClass(pathname.startsWith("/sobre"), collapsed)}
         >
           <Icon name="info" />
-          {collapsed ? <span className="sr-only">Sobre</span> : <span>Sobre</span>}
+          {collapsed ? <span className="sr-only">{t("Sobre")}</span> : <span>{t("Sobre")}</span>}
         </Link>
         <button
           type="button"
@@ -222,7 +232,7 @@ function Sidebar({ collapsed, pathname, locale }: { collapsed: boolean; pathname
           onClick={() => writeCollapsed(!collapsed)}
         >
           <Icon name={collapsed ? "expand" : "collapse"} />
-          <span className={collapsed ? "sr-only" : ""}>{collapsed ? "Expandir menu" : "Recolher menu"}</span>
+          <span className={collapsed ? "sr-only" : ""}>{t(collapsed ? "Expandir menu" : "Recolher menu")}</span>
         </button>
       </div>
     </aside>
@@ -239,9 +249,9 @@ function MobileNav({ pathname, locale }: { pathname: string; locale: Locale }) {
   return (
     <nav className="chrome fixed inset-x-0 bottom-0 z-40 border-t border-line md:hidden" aria-label="Navegação principal">
       <ul className="grid grid-cols-4">
-        <MobileItem href="/" label={t("Início")} icon="home" current={pathname === "/"} />
-        <MobileItem href="/jogos" label={t("Jogos")} icon="calendar" current={pathname === "/jogos"} />
-        <MobileItem href="/analise" label={t("Análise de jogos")} icon="chart" current={pathname.startsWith("/analise") || /^\/jogos\/[^/]+/.test(pathname)} />
+        <MobileItem href={localePrefix(locale)} label={t("Início")} icon="home" current={pathname === "/"} />
+        <MobileItem href={`${localePrefix(locale)}/jogos`} label={t("Jogos")} icon="calendar" current={pathname === "/jogos"} />
+        <MobileItem href={`${localePrefix(locale)}/analise`} label={t("Análise de jogos")} icon="chart" current={pathname.startsWith("/analise") || /^\/jogos\/[^/]+/.test(pathname)} />
         <li>
           <MoreMenu pathname={pathname} panel={more} locale={locale} />
         </li>
@@ -265,7 +275,7 @@ function MoreMenu({ pathname, panel, locale }: { pathname: string; panel: RefObj
           {moreItems.map((item) => (
             <li key={item.label}>
               <Link
-                href={item.href}
+                href={`${localePrefix(locale)}${item.href === "/" ? "" : item.href}`}
                 aria-current={item.current(pathname) ? "page" : undefined}
                 className={`flex min-h-12 items-center gap-3 px-3 text-sm hover:bg-raised hover:text-primary ${item.current(pathname) ? "bg-raised font-semibold text-primary" : ""}`}
               >
@@ -301,7 +311,7 @@ function NavLink({ item, pathname, collapsed, locale }: { item: Item; pathname: 
   const current = item.current(pathname);
   return (
     <Link
-      href={item.href}
+      href={`${localePrefix(locale)}${item.href === "/" ? "" : item.href}`}
       aria-current={current ? "page" : undefined}
       title={collapsed ? label : undefined}
       className={linkClass(current, collapsed)}

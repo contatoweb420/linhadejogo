@@ -2,6 +2,16 @@
 
 Análise estatística de futebol. A consulta é pública. A primeira origem é o plano gratuito do football-data.org. Sem chave no servidor, a aplicação não inventa resultados.
 
+## Documentação técnica
+
+- [Arquitetura, rotas e configuração](docs/ARQUITETURA.md)
+- [Operação, verificações e recuperação](docs/OPERACAO.md)
+- [Testes locais com Vitest e Playwright](docs/TESTES.md)
+- [Auditoria técnica de 2026-11-03](docs/AUDITORIA-2026-11-03.md)
+- [Mapa das duas cópias no workspace](../README.md)
+
+O acesso à redação, a retenção de artigos e as URLs com idioma têm limitações identificadas na auditoria. Os artigos novos são rascunhos; artigos já publicados podem ser atualizados automaticamente. O backup SQL não inclui os ficheiros editoriais de `.cache`.
+
 ## Executar
 
 1. Instala Node.js e Docker Desktop.

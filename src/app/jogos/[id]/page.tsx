@@ -162,7 +162,7 @@ export default async function MatchPage({
       <MatchContext names={[bundle.home.name, bundle.away.name, bundle.competition.name]} />
       <ConfidenceRadar result={result} />
       <ProbabilityPanel result={result} recordedAt={recordedAt} retrospective={recording.retrospective} />
-      <MatchCharts homeName={bundle.home.name} awayName={bundle.away.name} homeMatches={homeSamples} awayMatches={awaySamples} />
+      <MatchCharts homeCrest={bundle.home.crestUrl} awayCrest={bundle.away.crestUrl} homeName={bundle.home.name} awayName={bundle.away.name} homeMatches={homeSamples} awayMatches={awaySamples} />
 
       <Reveal>
       <section className="stat-card border border-line bg-card p-5">

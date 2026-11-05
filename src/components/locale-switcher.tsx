@@ -16,7 +16,7 @@ export function LocaleSwitcher({ locale }: { locale: Locale }) {
 
   function change(next: Locale) {
     if (next === locale) return;
-    router.push(`${localePrefix(next)}${route === "/" ? "" : route}`);
+    router.push(`${localePrefix(next)}${route === "/" ? "" : route}${window.location.search}${window.location.hash}`);
     router.refresh();
   }
 

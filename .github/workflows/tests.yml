@@ -1,0 +1,83 @@
+name: Testes
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_TELEMETRY_DISABLED: '1'
+
+jobs:
+  quality:
+    name: Lint, TypeScript e testes unitários
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Obter código
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Instalar dependências do lockfile
+        run: npm ci
+
+      - name: Verificar lint
+        run: npm run lint
+
+      - name: Verificar TypeScript
+        run: npx --no-install tsc --noEmit
+
+      - name: Executar testes unitários
+        run: npm test
+
+  e2e:
+    name: Playwright desktop e telemóvel
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Obter código
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Instalar dependências do lockfile
+        run: npm ci
+
+      - name: Instalar Chromium e bibliotecas do sistema
+        run: npx --no-install playwright install --with-deps chromium
+
+      - name: Executar testes de browser
+        run: npm run test:e2e
+
+      - name: Guardar relatório, screenshots, vídeos e traces
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v5
+        with:
+          name: playwright-results-${{ github.run_attempt }}
+          path: |
+            playwright-report/
+            test-results/
+          if-no-files-found: ignore
+          retention-days: 14

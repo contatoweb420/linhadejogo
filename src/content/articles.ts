@@ -1,7 +1,7 @@
 import type { CoverScene } from "@/components/cover";
-import type { EditorialImage } from "@/server/images/providers";
+import type { ArticleImage } from "@/server/images/providers";
 
-export const BLOG_CATEGORIES = ["Antevisão dos jogos", "Análise estatística", "Campeonatos", "Notícias"] as const;
+export const BLOG_CATEGORIES = ["Antevisão dos jogos", "Análise estatística", "Campeonatos", "Notícias", "Seleção Portuguesa"] as const;
 
 export type BlogCategory = (typeof BLOG_CATEGORIES)[number];
 export type ArticleStatus = "publicado" | "rascunho";
@@ -14,6 +14,7 @@ export type ArticleBlock =
 export type ArticleSource = {
   name: string;
   note: string;
+  url?: string;
 };
 
 export type Article = {
@@ -22,7 +23,8 @@ export type Article = {
   summary: string;
   blocks: ArticleBlock[];
   cover: CoverScene;
-  coverImage?: EditorialImage;
+  coverImage?: ArticleImage;
+  editorialType?: "news";
   category: BlogCategory;
   author: string;
   publishedAt: string;
@@ -32,6 +34,7 @@ export type Article = {
   example: boolean;
   seoTitle?: string;
   seoDescription?: string;
+  seoKeyword?: string;
   tags?: string[];
 };
 
@@ -168,5 +171,58 @@ export const articles: Article[] = [
     sources: [exampleSource],
     example: true,
     blocks: [{ type: "p", text: "Este rascunho não é um artigo publicado." }],
+  },
+  {
+    title: "Cristiano Ronaldo despede-se de Portugal: chega ao fim uma era histórica",
+    slug: "cristiano-ronaldo-despede-se-selecao-portuguesa",
+    summary: "Depois de 23 anos ao serviço da Seleção Nacional, Cristiano Ronaldo anunciou que se despedirá de Portugal após a pausa internacional de novembro. À data do anúncio, o capitão soma 234 internacionalizações e 146 golos.",
+    cover: "estadio",
+    coverImage: {
+      provider: "local-ai",
+      imageUrl: "/ronaldo-portugal-despedida.png",
+      alt: "Ilustração editorial gerada por IA de um futebolista com camisola vermelha inspirada na Seleção Portuguesa, num estádio iluminado.",
+      caption: "Ilustração editorial gerada por IA que representa a despedida de Cristiano Ronaldo da Seleção Portuguesa.",
+      width: 1672,
+      height: 941,
+      licenseVerified: false,
+    },
+    editorialType: "news",
+    category: "Seleção Portuguesa",
+    tags: ["Cristiano Ronaldo", "Portugal", "Seleção Nacional", "Al Nassr", "Futebol Internacional", "Euro 2016", "Liga das Nações"],
+    author: "Redação Linha de Jogo",
+    publishedAt: "2026-11-05",
+    updatedAt: "2026-11-05",
+    status: "publicado",
+    example: false,
+    seoTitle: "Cristiano Ronaldo anuncia despedida da Seleção Portuguesa | Linha de Jogo",
+    seoKeyword: "Cristiano Ronaldo despedida da Seleção Portuguesa",
+    seoDescription: "Cristiano Ronaldo anunciou a despedida de Portugal após a pausa internacional de novembro. Soma 234 jogos e 146 golos em 23 anos de seleção.",
+    sources: [
+      { name: "FIFA", url: "https://www.fifa.com/en/tournaments/mens/worldcup/articles/cristiano-ronaldo-portugal-retirement", note: "Anúncio da despedida, percurso internacional e continuidade no futebol de clubes." },
+      { name: "Reuters", url: "https://www.reuters.com/sports/soccer/cristiano-ronaldo-announces-retirement-portuguese-national-team-2026-11-05/", note: "Notícia de 5 de novembro de 2026 sobre o anúncio da saída da seleção." },
+      { name: "RTÉ / Reuters", url: "https://www.rte.ie/sport/soccer/2026/1105/1598096-ronaldo-to-retire-from-international-football-this-month/", note: "Cobertura atribuída à Reuters que situa a despedida após a pausa internacional de novembro." },
+    ],
+    blocks: [
+      { type: "p", text: "Há decisões que marcam o futebol para sempre. Esta quinta-feira, 5 de novembro de 2026, Cristiano Ronaldo anunciou que vai terminar a sua carreira internacional pela Seleção Portuguesa após a pausa internacional de novembro, preparando o fim de uma das trajetórias mais marcantes da história do futebol." },
+      { type: "p", text: "A decisão foi comunicada pelo próprio jogador através de uma mensagem nas redes sociais, na qual anunciou a intenção de passar a camisola número 7 às próximas gerações." },
+      { type: "p", text: "Aos 41 anos, o capitão prepara-se para encerrar um percurso internacional de 23 anos, iniciado em agosto de 2003. Durante este período, tornou-se uma das maiores figuras da história do futebol mundial e um símbolo incontornável da Seleção Nacional." },
+      { type: "h2", text: "Uma carreira feita de recordes" },
+      { type: "p", text: "À data do anúncio, os números demonstram a dimensão da sua passagem pela equipa das quinas: 234 internacionalizações e 146 golos. Estes são os totais conhecidos no momento do anúncio, e não uma garantia dos números com que terminará a carreira internacional." },
+      { type: "ul", items: ["23 anos de carreira internacional, desde agosto de 2003.", "234 internacionalizações por Portugal à data do anúncio.", "146 golos pela Seleção Nacional à data do anúncio.", "Campeão europeu em 2016 e vencedor da Liga das Nações em 2019 e 2025."] },
+      { type: "p", text: "Cristiano Ronaldo é, à data do anúncio, o recordista mundial masculino de jogos e golos por uma seleção nacional." },
+      { type: "p", text: "Mas o seu legado vai muito além das estatísticas. Foram mais de duas décadas de liderança, golos decisivos, momentos de emoção e uma ligação especial aos adeptos portugueses." },
+      { type: "h2", text: "Euro 2016: o momento que mudou a história" },
+      { type: "p", text: "Entre os momentos mais importantes da sua carreira internacional está a conquista do Campeonato da Europa de 2016, em França." },
+      { type: "p", text: "Apesar de ter saído lesionado durante a final frente à seleção francesa, Ronaldo acompanhou e incentivou os seus companheiros até à conquista do primeiro grande título europeu de Portugal." },
+      { type: "p", text: "A esse triunfo juntaram-se as conquistas da Liga das Nações, em 2019 e 2025. Três títulos internacionais que ajudaram a transformar a história do futebol português." },
+      { type: "h2", text: "O adeus à Seleção não significa o fim da carreira" },
+      { type: "p", text: "Cristiano Ronaldo não anunciou o fim da carreira como futebolista. O avançado continuará a representar o Al Nassr, na Arábia Saudita." },
+      { type: "p", text: "O anúncio diz respeito exclusivamente à sua carreira internacional. A despedida está prevista para depois da pausa internacional de novembro; não significa que já tenha terminado a sua participação na Seleção Portuguesa." },
+      { type: "h2", text: "Um legado que passa para as próximas gerações" },
+      { type: "p", text: "A camisola número 7 ficará para o futuro, mas a história de Cristiano Ronaldo com Portugal permanecerá. Da estreia em 2003 aos títulos internacionais, dos recordes aos momentos de emoção, o capitão ajudou a escrever algumas das páginas mais importantes da história da Seleção." },
+      { type: "p", text: "Portugal prepara-se para se despedir de um dos seus maiores símbolos dentro de campo. O futebol português fica com a memória de uma carreira extraordinária e com o desafio de preparar as próximas gerações." },
+      { type: "p", text: "A camisola 7 passa para o futuro. O legado fica na história." },
+      { type: "p", text: "Linha de Jogo — O futebol para além dos resultados." },
+    ],
   },
 ];

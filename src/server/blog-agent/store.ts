@@ -6,6 +6,7 @@ import type { AgentArticle, AgentConfig, AgentStatus, RunLog } from "./types";
 const DIR = "blog-agente";
 
 function directory() {
+  if (process.env.BLOG_AGENT_DATA_DIR) return path.resolve(process.env.BLOG_AGENT_DATA_DIR);
   return path.join(process.cwd(), ".cache", DIR);
 }
 

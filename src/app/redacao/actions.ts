@@ -38,7 +38,7 @@ export async function unlock(formData: FormData) {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
-    path: "/redacao",
+    path: "/",
     maxAge: 60 * 60 * 12,
   });
   redirect("/redacao");

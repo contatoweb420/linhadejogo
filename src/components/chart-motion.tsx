@@ -156,7 +156,7 @@ export type LinePoint = { date: string; caption: string };
 export type LineSeries = {
   name: string;
   tone: "primary" | "warn" | "good";
-  values: number[];
+  values: (number | null)[];
   digits?: 0 | 1 | 2;
   suffix?: string;
 };
@@ -173,8 +173,8 @@ const dotTone = {
   good: "bg-good",
 } as const;
 
-function formatSeriesValue(value: number, digits: 0 | 1 | 2, locale: string) {
-  return value.toLocaleString(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits });
+function formatSeriesValue(value: number | null | undefined, digits: 0 | 1 | 2, locale: string) {
+  return value == null || !Number.isFinite(value) ? "—" : value.toLocaleString(locale, { minimumFractionDigits: digits, maximumFractionDigits: digits });
 }
 
 function xPercent(index: number, count: number) {
@@ -192,11 +192,13 @@ export function LineChart({
   series,
   label,
   signature,
+  scaleMax,
 }: {
   points: LinePoint[];
   series: LineSeries[];
   label: string;
   signature: string;
+  scaleMax?: number;
 }) {
   const locale = useLocale();
   const { ready, reduced } = useMotion();
@@ -204,7 +206,7 @@ export function LineChart({
   const [active, setActive] = useState<number | null>(null);
   const labelId = useId();
   const count = points.length;
-  const max = Math.max(1, ...series.flatMap((item) => item.values));
+  const max = Math.max(1, scaleMax ?? 0, ...series.flatMap((item) => item.values.filter((value): value is number => value != null && Number.isFinite(value))));
 
   useEffect(() => {
     if (!ready) return;
@@ -223,35 +225,31 @@ export function LineChart({
 
   if (count === 0 || series.some((item) => item.values.length !== count)) return null;
 
-  const line = (values: number[]) =>
-    values
-      .map((value, index) => {
-        const command = index === 0 ? "M" : "L";
-        return `${command}${xPercent(index, count)} ${yPercent(value, max)}`;
-      })
-      .join(" ");
-
-  const primary = series[0];
-  const area =
-    primary && primary.values.length > 1
-      ? `${line(primary.values)} L${xPercent(count - 1, count)} 86 L${xPercent(0, count)} 86 Z`
-      : "";
+  const line = (values: (number | null)[]) => {
+    let previous: { x: number; y: number } | null = null;
+    return values.map((value, index) => {
+      if (value == null || !Number.isFinite(value)) { previous = null; return ""; }
+      const x = xPercent(index, count);
+      const y = yPercent(value, max);
+      const command = previous ? `C${previous.x + (x - previous.x) / 2} ${previous.y} ${previous.x + (x - previous.x) / 2} ${y} ${x} ${y}` : `M${x} ${y}`;
+      previous = { x, y };
+      return command;
+    }).join(" ");
+  };
 
   const choose = (index: number) => setActive(Math.max(0, Math.min(count - 1, index)));
 
   return (
-    <figure>
+    <figure aria-labelledby={`${labelId}-summary`}>
       <div
-        className="relative h-44"
+        className="relative h-52 sm:h-60"
         onPointerLeave={(event) => {
           if (event.pointerType === "mouse") setActive(null);
         }}
       >
         <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="h-full w-full" aria-hidden="true">
           <path d="M8 86 H92" fill="none" stroke="var(--border)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-          {area ? (
-            <path d={area} fill="var(--primary)" opacity={chartDrawn ? 0.14 : 0} className="line-fade" />
-          ) : null}
+          {[0, 0.5, 1].map(fraction => <path key={fraction} d={`M8 ${yPercent(max * fraction, max)} H92`} fill="none" stroke="var(--border)" strokeWidth="1" strokeDasharray="3 5" vectorEffect="non-scaling-stroke" />)}
           {series.map((item) =>
             item.values.length < 2 ? null : (
               <path
@@ -270,13 +268,17 @@ export function LineChart({
             ),
           )}
         </svg>
+        {[0, 0.5, 1].map(fraction => <span key={fraction} className="pointer-events-none absolute left-0 -translate-y-1/2 text-[10px] text-muted tabular-nums" style={{ top: `${yPercent(max * fraction, max)}%` }}>{formatSeriesValue(max * fraction, Number.isInteger(max * fraction) ? 0 : 1, locale)}</span>)}
         {points.map((point, index) => (
           <button
             key={`${point.date}-${index}`}
             type="button"
             className="absolute top-0 h-full -translate-x-1/2 cursor-crosshair"
-            style={{ left: `${xPercent(index, count)}%`, width: count === 1 ? "100%" : `${Math.max(84 / (count - 1), 8)}%` }}
+            style={{ left: `${xPercent(index, count)}%`, width: count === 1 ? "100%" : `${Math.min(16, 84 / count)}%` }}
             aria-label={pointLabel(point, series, index, locale)}
+            aria-describedby={active === index ? labelId : undefined}
+            onBlur={() => setActive(null)}
+            onKeyDown={event => { if (event.key === "Escape") setActive(null); }}
             onFocus={() => choose(index)}
             onPointerEnter={(event) => {
               if (event.pointerType === "mouse") choose(index);
@@ -285,7 +287,7 @@ export function LineChart({
           />
         ))}
         {series.map((item) =>
-          item.values.map((value, index) => (
+          item.values.map((value, index) => value == null || !Number.isFinite(value) ? null : (
             <span
               key={`${item.name}-${index}`}
               className={`chart-dot pointer-events-none absolute h-2.5 w-2.5 rounded-full border border-background ${dotTone[item.tone]} ${active === index ? "is-active" : ""}`}
@@ -298,7 +300,7 @@ export function LineChart({
             role="tooltip"
             id={labelId}
             className="pointer-events-none absolute top-0 z-20 max-w-[14rem] rounded-md border border-line bg-raised px-2.5 py-1.5 text-xs leading-5 text-foreground shadow-[0_8px_24px_rgb(0_0_0/0.28)]"
-            style={{ left: `${Math.min(78, Math.max(0, xPercent(active, count) - 8))}%` }}
+            style={{ left: `${Math.max(4, Math.min(96, xPercent(active, count)))}%`, transform: active > (count - 1) / 2 ? "translateX(-100%)" : undefined }}
           >
             <p className="text-muted">{formatChartDate(points[active].date, locale)}</p>
             <p>{points[active].caption}</p>
@@ -312,9 +314,8 @@ export function LineChart({
           </div>
         ) : null}
       </div>
-      <div className="mt-1 flex justify-between text-[10px] text-muted">
-        <span>{formatChartDate(points[0].date, locale)}</span>
-        {count > 1 ? <span>{formatChartDate(points[count - 1].date, locale)}</span> : null}
+      <div className="relative mt-2 h-5 text-[10px] text-muted">
+        {points.map((point, index) => index === 0 || index === count - 1 || (count > 4 && index === Math.floor((count - 1) / 2)) ? <span key={`${point.date}-${index}`} className="absolute -translate-x-1/2 whitespace-nowrap" style={{ left: `${xPercent(index, count)}%` }}>{new Intl.DateTimeFormat(locale, { timeZone: "Europe/Lisbon", day: "2-digit", month: "short" }).format(new Date(point.date))}</span> : null)}
       </div>
       <figcaption className="sr-only" id={`${labelId}-summary`}>
         {label}

@@ -8,6 +8,11 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
+    "test:e2e:setup": "npm install --save-dev @playwright/test && npx --no-install playwright install chromium",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report",
     "db:up": "docker compose up -d",
     "db:migrate": "node --env-file=.env.local scripts/apply-schema.mjs",
     "db:backup": "node scripts/backup-db.mjs",
@@ -22,6 +27,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^24.19.2",
     "@types/react": "^19",

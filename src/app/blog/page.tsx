@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Cover } from "@/components/cover";
+import { EditorialImage } from "@/components/editorial-image";
 import { BLOG_CATEGORIES, type Article } from "@/content/articles";
 import { blogHref, formatArticleDate, queryArticles } from "@/content/blog";
 import { publicArticles } from "@/server/blog-agent/public";
@@ -22,7 +23,7 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
       <header className="grid gap-2">
         <h1>Notícias e análises</h1>
         <p className="max-w-2xl text-sm text-muted">
-          Os artigos de exemplo estão identificados. Um texto publicado pela redação descreve números já guardados e não é uma notícia nem uma previsão.
+          Notícias, análises e contexto do futebol, com fontes identificadas. Os artigos de exemplo estão assinalados.
         </p>
       </header>
 
@@ -97,10 +98,10 @@ function Featured({ article }: { article: Article }) {
   return (
     <article className="grid gap-4 border border-line bg-card p-4 lg:grid-cols-[1.3fr_1fr] lg:items-center">
       <Link href={`/blog/${article.slug}`} aria-label={article.title}>
-        <Cover scene={article.cover} label={article.title} />
+        {article.coverImage?.provider === "local-ai" ? <EditorialImage image={article.coverImage} /> : <Cover scene={article.cover} label={article.title} />}
       </Link>
       <div className="grid gap-2">
-        <p className="text-xs font-semibold uppercase tracking-wide text-accent">Destaque · Artigo de exemplo</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-accent">Destaque · {article.example ? "Artigo de exemplo" : article.editorialType === "news" ? "Notícia editorial" : "Análise"}</p>
         <h2 className="font-serif text-3xl">
           <Link href={`/blog/${article.slug}`}>{article.title}</Link>
         </h2>
@@ -117,7 +118,7 @@ function ArticleCard({ article }: { article: Article }) {
   return (
     <article className="grid h-full gap-3 border border-line bg-card p-3">
       <Link href={`/blog/${article.slug}`} aria-label={article.title}>
-        <Cover scene={article.cover} label={article.title} />
+        {article.coverImage?.provider === "local-ai" ? <EditorialImage image={article.coverImage} /> : <Cover scene={article.cover} label={article.title} />}
       </Link>
       <div className="grid gap-2">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted">{article.category}</p>
@@ -125,7 +126,7 @@ function ArticleCard({ article }: { article: Article }) {
           <Link href={`/blog/${article.slug}`}>{article.title}</Link>
         </h2>
         <p className="text-sm text-muted">{article.summary}</p>
-        <p className="text-xs text-muted">{formatArticleDate(article.publishedAt)} · Artigo de exemplo</p>
+        <p className="text-xs text-muted">{formatArticleDate(article.publishedAt)} · {article.example ? "Artigo de exemplo" : article.editorialType === "news" ? "Notícia editorial" : "Análise"}</p>
       </div>
     </article>
   );
