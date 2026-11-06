@@ -1,3 +1,5 @@
+import { X509Certificate } from "node:crypto";
+import { createSecureContext } from "node:tls";
 import type postgres from "postgres";
 
 function configurationError(code: string): never {
@@ -5,7 +7,7 @@ function configurationError(code: string): never {
   throw Object.assign(new Error(code), { code });
 }
 
-export function connectionOptions(value: string) {
+export function connectionOptions(value: string, caPem?: string) {
   if (!value.trim()) configurationError("DATABASE_URL_MISSING");
   let url: URL;
   try {
@@ -23,6 +25,24 @@ export function connectionOptions(value: string) {
   }
 
   const local = ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname);
+  if (!local) {
+    if (!caPem?.trim()) configurationError("SUPABASE_DB_CA_PEM_MISSING");
+    try {
+      // Require one complete PEM CA; OpenSSL may silently ignore malformed input.
+      if (!/^-----BEGIN CERTIFICATE-----\s+[A-Za-z0-9+/=\s]+-----END CERTIFICATE-----$/.test(caPem.trim())) {
+        configurationError("SUPABASE_DB_CA_PEM_INVALID");
+      }
+      const certificate = new X509Certificate(caPem);
+      if (!certificate.ca ||
+        Date.now() < Date.parse(certificate.validFrom) ||
+        Date.now() > Date.parse(certificate.validTo)) {
+        configurationError("SUPABASE_DB_CA_PEM_INVALID");
+      }
+      createSecureContext({ ca: caPem });
+    } catch {
+      configurationError("SUPABASE_DB_CA_PEM_INVALID");
+    }
+  }
   const options = {
     max: 2,
     connect_timeout: 10,
@@ -32,7 +52,7 @@ export function connectionOptions(value: string) {
     // has a pipelining limitation: use its Session Pooler with this driver.
     prepare: false,
     fetch_types: false,
-    ...(local ? {} : { ssl: { rejectUnauthorized: true } }),
+    ...(local ? {} : { ssl: { ca: caPem!, rejectUnauthorized: true } }),
     debug: false,
     onnotice: () => {},
   } satisfies postgres.Options<Record<string, never>>;
@@ -51,6 +71,7 @@ const transportCategories: Record<string, string> = {
   DEPTH_ZERO_SELF_SIGNED_CERT: "tls", SELF_SIGNED_CERT_IN_CHAIN: "tls",
   UNABLE_TO_VERIFY_LEAF_SIGNATURE: "tls", UNABLE_TO_GET_ISSUER_CERT_LOCALLY: "tls",
   ERR_TLS_CERT_ALTNAME_INVALID: "tls", ERR_SSL_TLSV1_ALERT_PROTOCOL_VERSION: "tls",
+  SUPABASE_DB_CA_PEM_MISSING: "configuration", SUPABASE_DB_CA_PEM_INVALID: "configuration",
   DATABASE_URL_MISSING: "configuration", DATABASE_URL_INVALID: "configuration",
 };
 

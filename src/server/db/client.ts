@@ -17,7 +17,7 @@ export function databaseUrl() {
 
 export function getDb() {
   if (!globalForSql.sql) {
-    const { url, options } = connectionOptions(databaseUrl());
+    const { url, options } = connectionOptions(databaseUrl(), process.env.SUPABASE_DB_CA_PEM);
     globalForSql.sql = postgres(url, options);
   }
   if (!globalForSql.db) {
