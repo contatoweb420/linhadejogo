@@ -1,6 +1,9 @@
+import { ProbabilityTiles } from "@/components/probability-tiles";
+import { getLocale } from "@/lib/get-locale";
+import type { Locale } from "@/lib/i18n";
 import Link from "next/link";
 import { Crest } from "@/components/crest";
-import { formatLisbonTime, formatOneDecimalPercent, formatStatus, isLiveStatus, matchGroup } from "@/server/format/pt";
+import { formatLisbonTime, formatStatus, isLiveStatus, matchGroup } from "@/server/format/pt";
 import type { ShareEstimate } from "@/server/estimates";
 
 export type MatchCardData = {
@@ -23,7 +26,8 @@ export type MatchCardData = {
   estimate?: ShareEstimate | null;
 };
 
-export function MatchCard({ match }: { match: MatchCardData }) {
+export async function MatchCard({ match }: { match: MatchCardData }) {
+  const locale = await getLocale();
   const live = isLiveStatus(match.status);
   const score =
     match.regularHome != null && match.regularAway != null
@@ -52,21 +56,21 @@ export function MatchCard({ match }: { match: MatchCardData }) {
         </div>
         <TeamLine name={match.awayName} crest={match.awayCrest} align="end" />
       </Link>
-      <EstimateLine estimate={match.estimate} />
+      <EstimateLine estimate={match.estimate} locale={locale} />
     </article>
   );
 }
 
-function EstimateLine({ estimate }: { estimate?: ShareEstimate | null }) {
+function EstimateLine({ estimate, locale }: { estimate?: ShareEstimate | null; locale: Locale }) {
   if (estimate === undefined) return null;
   if (estimate === null) {
-    return <p className="mt-1 text-xs text-muted">Estimativa indisponível: faltam jogos anteriores nesta competição.</p>;
+    return <p className="mt-1 text-xs text-muted">{locale === "en-US" ? "Estimate unavailable: not enough previous games in this competition." : "Estimativa indisponível: faltam jogos anteriores nesta competição."}</p>;
   }
   return (
-    <p className="mt-1 text-xs text-muted">
-      Estimativa, não é uma certeza: casa {formatOneDecimalPercent(estimate.home)}, empate {formatOneDecimalPercent(estimate.draw)}, visita{" "}
-      {formatOneDecimalPercent(estimate.away)}.
-    </p>
+    <div>
+      <ProbabilityTiles shares={estimate} locale={locale} />
+      <p className="mt-1 text-xs text-muted">{locale === "en-US" ? "Model estimate, not a guaranteed result." : "Estimativa do modelo, não é uma certeza."}</p>
+    </div>
   );
 }
 

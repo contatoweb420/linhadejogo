@@ -1,4 +1,5 @@
-import { CountUp, GrowBar, Reveal } from "@/components/chart-motion";
+import { ProbabilityTiles } from "@/components/probability-tiles";
+import { CountUp, GrowBar } from "@/components/chart-motion";
 import { formatModelVersion, formatNumber, formatOneDecimalPercent } from "@/server/format/pt";
 import { presentShares, type ModelResult } from "@/server/model/poisson";
 import { translate, type Locale } from "@/lib/i18n";
@@ -31,14 +32,8 @@ export async function ProbabilityPanel({
     result.probabilities.draw,
     result.probabilities.away,
   ]);
-  const rows = [
-    [t("Vitória da casa"), home, "good" as const],
-    [t("Empate"), draw, "warn" as const],
-    [t("Vitória visitante"), away, "accent" as const],
-  ] as const;
 
   return (
-    <Reveal>
     <section className="stat-card border border-line bg-card p-5">
       <h2 className="font-serif text-2xl">{locale === "en-US" ? "Win, tie, or loss probabilities" : locale === "pt-BR" ? "Probabilidades de vitória, empate ou derrota" : "Probabilidades de vitória, empate ou derrota"}</h2>
       <p className="mt-2 text-sm leading-6 text-muted">
@@ -49,22 +44,7 @@ export async function ProbabilityPanel({
             ? ` ${locale === "en-US" ? "Saved on" : locale === "pt-BR" ? "Registro salvo em" : "Registo guardado em"} ${recordedAt.toLocaleString(locale, { timeZone: "Europe/Lisbon" })}.`
             : ""}
       </p>
-      <div className="mt-4 space-y-3">
-        {rows.map(([label, value, tone]) => (
-          <div key={label}>
-            <div className="mb-1 flex justify-between text-sm">
-              <span>{label}</span>
-              <CountUp value={value} kind="pct" />
-            </div>
-            <GrowBar
-              value={value}
-              max={100}
-              tone={tone}
-              tip={`${label}: ${formatOneDecimalPercent(value)}`}
-            />
-          </div>
-        ))}
-      </div>
+      <ProbabilityTiles shares={{ home, draw, away }} locale={locale} />
       <h3 className="mt-6 font-medium">{locale === "en-US" ? "Model-estimated average goals" : locale === "pt-BR" ? "Média de gols estimada pelo modelo" : "Média de golos estimada pelo modelo"}</h3>
       <dl className="mt-2 grid gap-2 text-sm sm:grid-cols-3">
         <Metric label={locale === "en-US" ? "Home" : locale === "pt-BR" ? "Mandante" : "Casa"} value={result.lambdas.home} />
@@ -117,7 +97,6 @@ export async function ProbabilityPanel({
         <li>{locale === "en-US" ? "Injuries, expected goals, market values, and individual player quality are not included. This source does not provide that data." : locale === "pt-BR" ? "Lesões, gols esperados, valores de mercado e qualidade individual dos jogadores não entram no cálculo. Essa fonte não fornece esses dados." : "Lesões, golos esperados, valores de mercado e qualidade individual dos jogadores não entram no cálculo. Esta fonte não disponibiliza esses dados."}</li>
       </ul>
     </section>
-    </Reveal>
   );
 }
 

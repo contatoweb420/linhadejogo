@@ -467,3 +467,49 @@ body {
   .shortcut-grid a:hover { border-color: #60a5fa; }
 }
 @keyframes panel-arrive { from { opacity: .75; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+/* 1X2 uses the existing LED green; percentages remain readable without animation. */
+.probability-tiles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(4px, 2%, 12px);
+  width: 100%;
+  max-width: 36rem;
+  margin-top: 1rem;
+  container-type: inline-size;
+}
+.probability-tiles__tile {
+  min-width: 0;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  background: var(--primary);
+  color: var(--on-primary);
+  border: 1px solid var(--primary-hover);
+  border-radius: 8px;
+  box-shadow: 0 0 16px var(--brand-green-soft);
+  text-align: center;
+}
+.probability-tiles__tile dt {
+  min-height: 2.5em;
+  display: grid;
+  place-items: center;
+  font-size: clamp(.55rem, 3cqi, .8rem);
+  font-weight: 800;
+  line-height: 1.25;
+  text-transform: uppercase;
+}
+.probability-tiles__tile dd {
+  margin: 0;
+  font-family: var(--font-newsreader);
+  font-size: clamp(1.05rem, 10cqi, 3.25rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+}
+.probability-tiles__tile dd span { font-size: .65em; }

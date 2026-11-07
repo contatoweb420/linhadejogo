@@ -1,3 +1,5 @@
+import { ProbabilityTiles } from "@/components/probability-tiles";
+import { estimatesForMatches } from "@/server/estimates";
 import Link from "next/link";
 import { Suspense } from "react";
 import { CountUp, Reveal } from "@/components/chart-motion";
@@ -167,10 +169,19 @@ function Lead({ match, locale }: { match: DayMatch; locale: Locale }) {
       </p>
       <p className="mt-2 text-xs text-muted">{locale === "en-US" ? "Saved status. Updated:" : "Estado guardado. Atualizado em:"} {homeDateTime(match.fetchedAt, locale)}</p>
       <p className="mt-2 text-sm">{homeResultDetails(match, locale).join(" · ")}</p>
+      <Suspense fallback={null}><FeaturedProbabilities match={match} locale={locale} /></Suspense>
       <Link href={homeHref(`/jogos/${match.externalId}`, locale)} className="btn mt-4">
         {t("Abrir a análise")}
       </Link>
     </article>
+  );
+}
+
+async function FeaturedProbabilities({ match, locale }: { match: DayMatch; locale: Locale }) {
+  const estimates = await estimatesForMatches([match]);
+  const shares = estimates.get(match.externalId);
+  return shares ? <ProbabilityTiles shares={shares} locale={locale} /> : (
+    <p className="mt-3 text-xs text-muted">{locale === "en-US" ? "Estimate unavailable: not enough previous games in this competition." : "Estimativa indisponível: faltam jogos anteriores nesta competição."}</p>
   );
 }
 

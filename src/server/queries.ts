@@ -45,6 +45,9 @@ export async function listHomeMatches(group: "finished" | "live" | "upcoming", n
   return getDb()
     .select({
       externalId: matches.externalId,
+      competitionId: matches.competitionId,
+      homeTeamId: matches.homeTeamId,
+      awayTeamId: matches.awayTeamId,
       utcDate: matches.utcDate,
       status: matches.status,
       regularHome: matches.regularHome,
