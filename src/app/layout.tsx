@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import Script from "next/script";
+import { AnalyticsConsent } from "@/components/analytics-consent";
+import { consentDefaults } from "@/lib/analytics";
 import { AppShell } from "@/components/site-nav";
 import { StadiumHero } from "@/components/stadium-hero";
 import { HomeSidebar } from "@/components/home-sidebar";
@@ -66,6 +69,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={htmlLocale} data-theme="dark" suppressHydrationWarning className="h-full">
       <head>
+        <Script id="google-consent-defaults" strategy="beforeInteractive">{consentDefaults}</Script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
@@ -75,6 +79,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="min-h-full antialiased">
+        <AnalyticsConsent locale={locale} />
         <a
           href="#conteudo"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:bg-card focus:px-3 focus:py-2"
