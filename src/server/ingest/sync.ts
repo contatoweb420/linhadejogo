@@ -77,7 +77,7 @@ function errorMessage(error: unknown) {
 }
 
 function missingToken() {
-  return { ok: false, message: null as string | null };
+  return { ok: false, message: "A recolha no servidor ainda não está configurada." };
 }
 
 export function windowKey(day: string) {

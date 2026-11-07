@@ -6,12 +6,22 @@ import {
   integer,
   jsonb,
   pgTable,
+  pgSequence,
   real,
   serial,
   text,
   timestamp,
   unique,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
+
+// Independent identifier space used by the OpenFootball archive importer.
+export const archiveExternalIdSequence = pgSequence("archive_external_id_seq", {
+  startWith: 900000001,
+  increment: 1,
+  cache: 1,
+  cycle: false,
+});
 
 export const sports = pgTable("sports", {
   id: serial("id").primaryKey(),
@@ -50,6 +60,7 @@ export const seasons = pgTable(
       .references(() => competitions.id),
     source: text("source").notNull(),
     externalId: integer("external_id").notNull(),
+    providerKey: text("provider_key"),
     startDate: text("start_date"),
     endDate: text("end_date"),
     currentMatchday: integer("current_matchday"),
@@ -57,6 +68,8 @@ export const seasons = pgTable(
   },
   (table) => [
     unique("seasons_source_external").on(table.source, table.externalId),
+    uniqueIndex("seasons_source_provider_key").on(table.source, table.providerKey)
+      .where(sql`${table.providerKey} is not null`),
   ],
 );
 
@@ -66,13 +79,18 @@ export const teams = pgTable(
     id: serial("id").primaryKey(),
     source: text("source").notNull(),
     externalId: integer("external_id").notNull(),
+    providerKey: text("provider_key"),
     name: text("name").notNull(),
     shortName: text("short_name"),
     tla: text("tla"),
     crestUrl: text("crest_url"),
     fetchedAt: timestamp("fetched_at", { withTimezone: true }).notNull(),
   },
-  (table) => [unique("teams_source_external").on(table.source, table.externalId)],
+  (table) => [
+    unique("teams_source_external").on(table.source, table.externalId),
+    uniqueIndex("teams_source_provider_key").on(table.source, table.providerKey)
+      .where(sql`${table.providerKey} is not null`),
+  ],
 );
 
 export const matches = pgTable(
@@ -81,6 +99,7 @@ export const matches = pgTable(
     id: serial("id").primaryKey(),
     source: text("source").notNull(),
     externalId: integer("external_id").notNull(),
+    providerKey: text("provider_key"),
     competitionId: integer("competition_id")
       .notNull()
       .references(() => competitions.id),
@@ -132,6 +151,8 @@ export const matches = pgTable(
   },
   (table) => [
     unique("matches_source_external").on(table.source, table.externalId),
+    uniqueIndex("matches_source_provider_key").on(table.source, table.providerKey)
+      .where(sql`${table.providerKey} is not null`),
     index("matches_utc_date").on(table.utcDate),
     index("matches_home_team").on(table.homeTeamId),
     index("matches_away_team").on(table.awayTeamId),

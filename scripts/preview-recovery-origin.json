@@ -1,0 +1,926 @@
+{
+  "columns": {
+    "agent_cache": [
+      {
+        "name": "agent",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "itens",
+        "type": "jsonb",
+        "not_null": true
+      },
+      {
+        "name": "updated_at",
+        "type": "timestamp with time zone",
+        "not_null": true
+      }
+    ],
+    "api_calls": [
+      {
+        "name": "id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "called_at",
+        "type": "timestamp with time zone",
+        "not_null": true
+      }
+    ],
+    "competitions": [
+      {
+        "name": "id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "sport_id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "source",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "external_id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "code",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "country",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "emblem_url",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "type",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "fetched_at",
+        "type": "timestamp with time zone",
+        "not_null": true
+      }
+    ],
+    "evaluation_runs": [
+      {
+        "name": "id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "model_version",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "computed_at",
+        "type": "timestamp with time zone",
+        "not_null": true
+      },
+      {
+        "name": "evaluated",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "skipped",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "model_brier",
+        "type": "real",
+        "not_null": false
+      },
+      {
+        "name": "model_log_loss",
+        "type": "real",
+        "not_null": false
+      },
+      {
+        "name": "baseline_brier",
+        "type": "real",
+        "not_null": false
+      },
+      {
+        "name": "baseline_log_loss",
+        "type": "real",
+        "not_null": false
+      },
+      {
+        "name": "payload",
+        "type": "jsonb",
+        "not_null": true
+      }
+    ],
+    "matches": [
+      {
+        "name": "id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "source",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "external_id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "competition_id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "season_id",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "utc_date",
+        "type": "timestamp with time zone",
+        "not_null": true
+      },
+      {
+        "name": "status",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "matchday",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "stage",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "group_name",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "duration",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "venue",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "minute",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "home_team_id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "away_team_id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "ht_home",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "ht_away",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "regular_home",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "regular_away",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "ft_home",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "ft_away",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "et_home",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "et_away",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "pen_home",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "pen_away",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "winner",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "home_shots",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "away_shots",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "home_shots_on",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "away_shots_on",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "home_possession",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "away_possession",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "home_corners",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "away_corners",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "home_fouls",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "away_fouls",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "home_yellow",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "away_yellow",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "home_red",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "away_red",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "odds_home",
+        "type": "real",
+        "not_null": false
+      },
+      {
+        "name": "odds_draw",
+        "type": "real",
+        "not_null": false
+      },
+      {
+        "name": "odds_away",
+        "type": "real",
+        "not_null": false
+      },
+      {
+        "name": "remote_updated_at",
+        "type": "timestamp with time zone",
+        "not_null": false
+      },
+      {
+        "name": "fetched_at",
+        "type": "timestamp with time zone",
+        "not_null": true
+      },
+      {
+        "name": "provider_key",
+        "type": "text",
+        "not_null": false
+      }
+    ],
+    "players": [
+      {
+        "name": "id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "source",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "external_id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "position",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "nationality",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "date_of_birth",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "fetched_at",
+        "type": "timestamp with time zone",
+        "not_null": true
+      }
+    ],
+    "predictions": [
+      {
+        "name": "id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "match_id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "model_version",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "not_null": true
+      },
+      {
+        "name": "home_probability",
+        "type": "real",
+        "not_null": true
+      },
+      {
+        "name": "draw_probability",
+        "type": "real",
+        "not_null": true
+      },
+      {
+        "name": "away_probability",
+        "type": "real",
+        "not_null": true
+      },
+      {
+        "name": "lambda_home",
+        "type": "real",
+        "not_null": true
+      },
+      {
+        "name": "lambda_away",
+        "type": "real",
+        "not_null": true
+      },
+      {
+        "name": "sample_home",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "sample_away",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "sample_league",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "payload",
+        "type": "jsonb",
+        "not_null": true
+      }
+    ],
+    "seasons": [
+      {
+        "name": "id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "competition_id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "source",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "external_id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "start_date",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "end_date",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "current_matchday",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "fetched_at",
+        "type": "timestamp with time zone",
+        "not_null": true
+      },
+      {
+        "name": "provider_key",
+        "type": "text",
+        "not_null": false
+      }
+    ],
+    "sports": [
+      {
+        "name": "id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "code",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "not_null": true
+      }
+    ],
+    "squad_entries": [
+      {
+        "name": "id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "team_id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "player_id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "shirt_number",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "position",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "fetched_at",
+        "type": "timestamp with time zone",
+        "not_null": true
+      }
+    ],
+    "standings": [
+      {
+        "name": "id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "competition_id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "season_id",
+        "type": "integer",
+        "not_null": false
+      },
+      {
+        "name": "team_id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "table_type",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "group_name",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "position",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "played",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "won",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "draw",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "lost",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "goals_for",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "goals_against",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "goal_difference",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "points",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "form",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "fetched_at",
+        "type": "timestamp with time zone",
+        "not_null": true
+      }
+    ],
+    "sync_state": [
+      {
+        "name": "key",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "source",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "fetched_at",
+        "type": "timestamp with time zone",
+        "not_null": true
+      },
+      {
+        "name": "ok",
+        "type": "boolean",
+        "not_null": true
+      },
+      {
+        "name": "message",
+        "type": "text",
+        "not_null": false
+      }
+    ],
+    "teams": [
+      {
+        "name": "id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "source",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "external_id",
+        "type": "integer",
+        "not_null": true
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "not_null": true
+      },
+      {
+        "name": "short_name",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "tla",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "crest_url",
+        "type": "text",
+        "not_null": false
+      },
+      {
+        "name": "fetched_at",
+        "type": "timestamp with time zone",
+        "not_null": true
+      },
+      {
+        "name": "provider_key",
+        "type": "text",
+        "not_null": false
+      }
+    ]
+  },
+  "foreign_keys": [
+    [
+      "competitions",
+      "sport_id",
+      "sports",
+      "id"
+    ],
+    [
+      "matches",
+      "away_team_id",
+      "teams",
+      "id"
+    ],
+    [
+      "matches",
+      "competition_id",
+      "competitions",
+      "id"
+    ],
+    [
+      "matches",
+      "home_team_id",
+      "teams",
+      "id"
+    ],
+    [
+      "matches",
+      "season_id",
+      "seasons",
+      "id"
+    ],
+    [
+      "predictions",
+      "match_id",
+      "matches",
+      "id"
+    ],
+    [
+      "seasons",
+      "competition_id",
+      "competitions",
+      "id"
+    ],
+    [
+      "squad_entries",
+      "player_id",
+      "players",
+      "id"
+    ],
+    [
+      "squad_entries",
+      "team_id",
+      "teams",
+      "id"
+    ],
+    [
+      "standings",
+      "competition_id",
+      "competitions",
+      "id"
+    ],
+    [
+      "standings",
+      "season_id",
+      "seasons",
+      "id"
+    ],
+    [
+      "standings",
+      "team_id",
+      "teams",
+      "id"
+    ]
+  ],
+  "keys": [
+    [
+      "agent_cache",
+      "PRIMARY KEY",
+      "agent"
+    ],
+    [
+      "api_calls",
+      "PRIMARY KEY",
+      "id"
+    ],
+    [
+      "competitions",
+      "PRIMARY KEY",
+      "id"
+    ],
+    [
+      "competitions",
+      "UNIQUE",
+      "source, code"
+    ],
+    [
+      "competitions",
+      "UNIQUE",
+      "source, external_id"
+    ],
+    [
+      "evaluation_runs",
+      "PRIMARY KEY",
+      "id"
+    ],
+    [
+      "matches",
+      "PRIMARY KEY",
+      "id"
+    ],
+    [
+      "matches",
+      "UNIQUE",
+      "source, external_id"
+    ],
+    [
+      "players",
+      "PRIMARY KEY",
+      "id"
+    ],
+    [
+      "players",
+      "UNIQUE",
+      "source, external_id"
+    ],
+    [
+      "predictions",
+      "UNIQUE",
+      "match_id, model_version"
+    ],
+    [
+      "predictions",
+      "PRIMARY KEY",
+      "id"
+    ],
+    [
+      "seasons",
+      "PRIMARY KEY",
+      "id"
+    ],
+    [
+      "seasons",
+      "UNIQUE",
+      "source, external_id"
+    ],
+    [
+      "sports",
+      "UNIQUE",
+      "code"
+    ],
+    [
+      "sports",
+      "PRIMARY KEY",
+      "id"
+    ],
+    [
+      "squad_entries",
+      "PRIMARY KEY",
+      "id"
+    ],
+    [
+      "squad_entries",
+      "UNIQUE",
+      "team_id, player_id"
+    ],
+    [
+      "standings",
+      "UNIQUE",
+      "competition_id, season_id, team_id, table_type, group_name"
+    ],
+    [
+      "standings",
+      "PRIMARY KEY",
+      "id"
+    ],
+    [
+      "sync_state",
+      "PRIMARY KEY",
+      "key"
+    ],
+    [
+      "teams",
+      "PRIMARY KEY",
+      "id"
+    ],
+    [
+      "teams",
+      "UNIQUE",
+      "source, external_id"
+    ]
+  ]
+}

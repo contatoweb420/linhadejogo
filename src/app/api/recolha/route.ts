@@ -7,7 +7,8 @@ export async function POST(request: Request) {
     return new Response(null, { status: 404 });
   }
   const day = lisbonToday();
-  await syncCompetitions(false);
-  await syncWindow(day, false);
-  return Response.json({ ok: true });
+  const competitions = await syncCompetitions(false);
+  const window = await syncWindow(day, false);
+  const ok = competitions.ok && window.ok;
+  return Response.json({ ok }, { status: ok ? 200 : 502 });
 }

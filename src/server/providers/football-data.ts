@@ -171,6 +171,10 @@ export async function footballDataGet(path: string) {
   const response = await fetch(`${BASE_URL}${path}`, {
     headers: { "X-Auth-Token": token },
     cache: "no-store",
+    // Bound the diagnostic/provider request and never forward the API key
+    // to a redirected destination.
+    signal: AbortSignal.timeout(8_000),
+    redirect: "error",
   });
   if (response.status === 400) {
     throw new ProviderError("A origem recusou o pedido. A configuração no servidor precisa de ser confirmada.", 400);

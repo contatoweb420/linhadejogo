@@ -69,6 +69,7 @@ describe("Preview-only football diagnostic", () => {
     expect(response.headers.get("vary")).toBe("Authorization");
     expect(fetchMock).toHaveBeenCalledExactlyOnceWith("https://api.football-data.org/v4/competitions", {
       headers: { "X-Auth-Token": providerKey }, cache: "no-store",
+      signal: expect.any(AbortSignal), redirect: "error",
     });
     expect(console.error).not.toHaveBeenCalled();
     expect(console.log).not.toHaveBeenCalled();
@@ -114,5 +115,24 @@ describe("Preview-only football diagnostic", () => {
     const response = await POST(request());
     expect(await response.json()).toEqual({ success: false, httpStatus: 502, responseValid: null, competitionCount: null });
     expect(console.error).not.toHaveBeenCalled();
+  });
+
+  it("bounds the real provider request to eight seconds without leaking timeout errors", async () => {
+    vi.useFakeTimers();
+    try {
+      fetchMock.mockImplementation(async (_url, options) => {
+        const signal = options?.signal;
+        expect(signal).toBeInstanceOf(AbortSignal);
+        expect(signal?.aborted).toBe(false);
+        throw new DOMException("synthetic timeout", "TimeoutError");
+      });
+      const timeout = vi.spyOn(AbortSignal, "timeout");
+      const response = await POST(request());
+      expect(timeout).toHaveBeenCalledWith(8_000);
+      expect(await response.json()).toEqual({ success: false, httpStatus: 502, responseValid: null, competitionCount: null });
+      expect(console.error).not.toHaveBeenCalled();
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
