@@ -472,9 +472,9 @@ body {
 .probability-tiles {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(4px, 2%, 12px);
+  gap: clamp(2px, 2%, 6px);
   width: 100%;
-  max-width: 36rem;
+  max-width: 18rem;
   margin-top: 1rem;
   container-type: inline-size;
 }
@@ -485,8 +485,8 @@ body {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 8px;
-  padding: 6px;
+  gap: 4px;
+  padding: 3px;
   background: var(--primary);
   color: var(--on-primary);
   border: 1px solid var(--primary-hover);
@@ -513,3 +513,29 @@ body {
   white-space: nowrap;
 }
 .probability-tiles__tile dd span { font-size: .65em; }
+
+@media (max-width: 600px) {
+  .probability-tiles {
+    width: 50%;
+    margin-top: 2.5rem;
+  }
+  .probability-tiles__tile {
+    position: relative;
+  }
+  .probability-tiles__tile dt {
+    position: absolute;
+    bottom: calc(100% + 4px);
+    width: 100%;
+    color: var(--text-secondary);
+    font-size: .55rem;
+  }
+  .probability-tiles__tile dd {
+    font-size: clamp(.75rem, 10cqi, 1.8rem);
+  }
+}
+
+@media (max-width: 360px) {
+  .probability-tiles__tile dt {
+    font-size: .5rem;
+  }
+}
