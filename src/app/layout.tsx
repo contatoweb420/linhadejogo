@@ -5,6 +5,7 @@ import { consentDefaults } from "@/lib/analytics";
 import { AppShell } from "@/components/site-nav";
 import { StadiumHero } from "@/components/stadium-hero";
 import { HomeSidebar } from "@/components/home-sidebar";
+import { seoAlternates } from "@/lib/seo";
 import { getSiteUrl } from "@/lib/site-url";
 import { localePrefix, type Locale } from "@/lib/i18n";
 import { getLocale } from "@/lib/get-locale";
@@ -24,17 +25,8 @@ const descriptions: Record<Locale, string> = {
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
   const requestPath = (await headers()).get("x-site-path") || localePrefix(locale);
-  const routePath = requestPath.replace(/^\/(pt-br|pt-pt|en-us)(?=\/|$)/i, "") || "/";
-  const path = `${localePrefix(locale)}${routePath === "/" ? "" : routePath}`;
-  const alternates = siteUrl ? {
-    canonical: new URL(path, siteUrl).toString(),
-    languages: {
-      "pt-BR": new URL(`/pt-br${routePath === "/" ? "" : routePath}`, siteUrl).toString(),
-      "pt-PT": new URL(`/pt-pt${routePath === "/" ? "" : routePath}`, siteUrl).toString(),
-      "en-US": new URL(`/en-us${routePath === "/" ? "" : routePath}`, siteUrl).toString(),
-      "x-default": new URL(`/pt-br${routePath === "/" ? "" : routePath}`, siteUrl).toString(),
-    },
-  } : undefined;
+  const publicPage = !/^\/(?:pt-br|pt-pt|en-us)\/(?:redacao)(?:\/|$)/.test(requestPath);
+  const alternates = publicPage ? seoAlternates(requestPath, locale) : { canonical: null, languages: {} };
   const description = descriptions[locale];
   return {
   metadataBase: siteUrl ?? undefined,
@@ -44,6 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
   },
   description,
   alternates,
+  ...(process.env.VERCEL_ENV === "preview" ? { robots: { index: false, follow: false } } : {}),
   openGraph: {
     type: "website",
     locale: locale === "pt-BR" ? "pt_BR" : locale === "pt-PT" ? "pt_PT" : "en_US",

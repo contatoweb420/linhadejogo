@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/localized-link";
 import { formatArticleDate } from "@/content/blog";
 import { filterNews, readNews } from "@/server/news/store";
 

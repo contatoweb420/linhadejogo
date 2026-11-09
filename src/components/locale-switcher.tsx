@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
+import { articleLocales } from "@/content/article-locales";
 import { localePrefix, type Locale } from "@/lib/i18n";
 
 const choices: { locale: Locale; flag: string; label: string }[] = [
@@ -14,7 +15,10 @@ export function LocaleSwitcher({ locale }: { locale: Locale }) {
   const router = useRouter();
   const route = pathname.replace(/^\/(pt-br|pt-pt|en-us)(?=\/|$)/i, "") || "/";
 
+  const available = route.startsWith("/blog/") ? articleLocales() : choices.map(choice => choice.locale);
+
   function change(next: Locale) {
+    if (!available.includes(next)) return;
     if (next === locale) return;
     router.push(`${localePrefix(next)}${route === "/" ? "" : route}${window.location.search}${window.location.hash}`);
     router.refresh();
@@ -26,6 +30,7 @@ export function LocaleSwitcher({ locale }: { locale: Locale }) {
         <button
           key={choice.locale}
           type="button"
+          disabled={!available.includes(choice.locale)}
           onClick={() => change(choice.locale)}
           aria-label={`${choice.flag} ${choice.label}`}
           aria-pressed={locale === choice.locale}

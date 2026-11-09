@@ -1,6 +1,6 @@
 import { ProbabilityTiles } from "@/components/probability-tiles";
 import { estimatesForMatches } from "@/server/estimates";
-import Link from "next/link";
+import Link from "@/components/localized-link";
 import { Suspense } from "react";
 import { CountUp, Reveal } from "@/components/chart-motion";
 import { CompetitionLink } from "@/components/competition-link";

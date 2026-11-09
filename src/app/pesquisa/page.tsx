@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/localized-link";
 import { SetupPanel } from "@/components/setup-panel";
 import { pingDatabase } from "@/server/db/client";
 import { formatCountry } from "@/server/format/pt";

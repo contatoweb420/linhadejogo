@@ -80,3 +80,11 @@ Os valores de exemplo estão em `.env.example`. Não guardar credenciais em docu
 | `DB_DIAGNOSTIC_SECRET`, `VERCEL_ENV` | Condições específicas do endpoint de diagnóstico; ausentes do exemplo atual |
 
 O Next.js lê `.env.local` antes de `.env`; os scripts de migração e importação carregam explicitamente `.env.local`. Recomenda-se manter credenciais da aplicação em `.env.local` e variáveis do Compose em `.env`, evitando duplicados divergentes. Variáveis `NEXT_PUBLIC_*` são públicas e nunca devem conter segredos.
+
+## Origem SEO e idiomas
+
+A origem oficial é https://www.linhadejogo.com. NEXT_PUBLIC_SITE_URL ausente usa essa constante; VERCEL_URL nunca constrói URLs SEO. Em Production uma configuração explícita diferente é rejeitada sem divulgar o valor. Loopback só é aceite em desenvolvimento. Preview recebe noindex.
+
+As páginas usam /pt-br, /pt-pt e /en-us. Artigos existentes e os templates editoriais são pt-PT: só essa versão é publicada e incluída no sitemap; pedidos de outras variantes redirecionam para o original. Não há traduções implícitas nem alterações ao armazenamento histórico. Novas traduções exigem conteúdo e um resolver próprios antes de serem anunciadas.
+
+Rotas antigas sem prefixo usam 308 determinístico para pt-br, exceto artigos (pt-pt). Cookies não determinam redirects permanentes. Links internos são localizados durante SSR por LocalizedLink; filtros e parâmetros mantêm-se.

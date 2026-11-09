@@ -1,13 +1,16 @@
-export function getSiteUrl(): URL | null {
+export const OFFICIAL_SITE_ORIGIN = "https://www.linhadejogo.com";
+
+export function getSiteUrl(): URL {
   const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim();
-  const deployment = process.env.VERCEL_URL?.trim();
-  const candidate = configured || (deployment ? `https://${deployment}` : null);
-  if (!candidate) return null;
-  try {
-    const url = new URL(candidate);
-    if (url.protocol !== "https:" && !(url.protocol === "http:" && ["localhost", "127.0.0.1"].includes(url.hostname))) return null;
-    return new URL(`${url.origin}/`);
-  } catch {
-    return null;
+  const local = process.env.NODE_ENV !== "production" && process.env.VERCEL_ENV !== "production";
+  if (local && configured) {
+    try {
+      const url = new URL(configured);
+      if (["localhost", "127.0.0.1"].includes(url.hostname) && ["http:", "https:"].includes(url.protocol) && !url.username && !url.password) return new URL(url.origin);
+    } catch { /* Invalid public configuration is rejected below. */ }
   }
+  if (configured && configured !== OFFICIAL_SITE_ORIGIN && configured !== `${OFFICIAL_SITE_ORIGIN}/`) {
+    throw new Error("INVALID_PUBLIC_SITE_ORIGIN");
+  }
+  return new URL(OFFICIAL_SITE_ORIGIN);
 }

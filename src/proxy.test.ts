@@ -13,9 +13,10 @@ describe("localized proxy", () => {
     const request = new NextRequest("http://127.0.0.1:3101/en-us", { headers: { host: "127.0.0.1:3101" } });
     expect(proxy(request).headers.get("x-middleware-rewrite")).toBe("http://127.0.0.1:3101/");
   });
-  it("redirects with the locale cookie and keeps all parameters", () => {
+  it("redirects deterministically despite the locale cookie and keeps all parameters", () => {
     const response = proxy(new NextRequest("https://example.test/jogos?data=2026-11-04", { headers: { cookie: "linha-de-jogo-locale=en-us" } }));
-    expect(response.headers.get("location")).toBe("https://example.test/en-us/jogos?data=2026-11-04");
+    expect(response.headers.get("location")).toBe("https://example.test/pt-br/jogos?data=2026-11-04");
+    expect(response.status).toBe(308);
   });
   it("overwrites a conflicting locale header with the URL locale", () => {
     const response = proxy(new NextRequest("https://example.test/pt-pt", { headers: { "x-site-locale": "en-us" } }));
@@ -34,4 +35,16 @@ it("does not redirect a validated second internal rewrite pass", () => {
 it("does not trust a mismatched forwarded path", () => {
   const response = proxy(new NextRequest("https://example.test/jogos", { headers: { "x-site-locale": "en-us", "x-site-path": "/en-us/blog" } }));
   expect(response.headers.get("location")).toBe("https://example.test/pt-br/jogos");
+});
+
+it("preserves legacy article access through the actual original locale", () => {
+  const response = proxy(new NextRequest("https://example.test/blog/forma-recente?x=1"));
+  expect(response.status).toBe(308);
+  expect(response.headers.get("location")).toBe("https://example.test/pt-pt/blog/forma-recente?x=1");
+});
+
+it.each(["pt-br", "en-us"])("redirects unavailable article locale %s before HTML streaming, preserving query parameters", locale => {
+  const response = proxy(new NextRequest(`https://example.test/${locale}/blog/forma-recente?utm_source=test&x=1&x=2`));
+  expect(response.status).toBe(308);
+  expect(response.headers.get("location")).toBe("https://example.test/pt-pt/blog/forma-recente?utm_source=test&x=1&x=2");
 });

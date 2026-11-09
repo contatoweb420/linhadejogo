@@ -1,3 +1,4 @@
+import { localizedPath } from "@/lib/i18n";
 import type { ReactNode } from "react";
 import { MatchBoard } from "@/components/match-board";
 import { SetupPanel } from "@/components/setup-panel";
@@ -144,7 +145,7 @@ function Field({ label, children }: { label: string; children: ReactNode }) {
 function SearchForm({ locale }: { locale: Locale }) {
   const t = (text: string) => translate(locale, text);
   return (
-    <form action="/pesquisa" method="get" className="flex gap-2">
+    <form action={localizedPath("/pesquisa", locale)} method="get" className="flex gap-2">
       <label className="sr-only" htmlFor="pesquisa-rapida">
         {t("Equipa ou competição")}
       </label>

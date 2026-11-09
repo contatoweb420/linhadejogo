@@ -68,3 +68,11 @@ export function formatLocalePercent(value: number, locale: Locale, maximumFracti
 export function localePrefix(locale: Locale) {
   return `/${localePrefixes[locale]}`;
 }
+
+/** Prefix internal page URLs once, preserving query strings and fragments. */
+export function localizedPath(href: string, locale: Locale): string {
+  if (!href.startsWith("/") || href.startsWith("//") || href.includes("\\")) return href;
+  if (/^\/(?:api|_next)(?:\/|$)/.test(href) || /\.[^/]+(?:[?#]|$)/.test(href.split(/[?#]/)[0])) return href;
+  if (/^\/(pt-br|pt-pt|en-us)(?=\/|[?#]|$)/i.test(href)) return href;
+  return `${localePrefix(locale)}${href === "/" ? "" : href}`;
+}

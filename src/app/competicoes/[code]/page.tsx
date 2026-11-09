@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/localized-link";
 import { Fragment } from "react";
 import { notFound } from "next/navigation";
 import { after } from "next/server";

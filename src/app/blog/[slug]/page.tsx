@@ -1,10 +1,13 @@
-import Link from "next/link";
-import { notFound } from "next/navigation";
+import Link from "@/components/localized-link";
+import { notFound, permanentRedirect } from "next/navigation";
 import { Cover } from "@/components/cover";
 import { EditorialImage } from "@/components/editorial-image";
 import { ShareArticle } from "@/components/share-article";
 import type { ArticleBlock } from "@/content/articles";
 import { formatArticleDate } from "@/content/blog";
+import { getLocale } from "@/lib/get-locale";
+import { ORIGINAL_ARTICLE_LOCALE } from "@/content/article-locales";
+import { seoAlternates, contentPath } from "@/lib/seo";
 import { getSiteUrl } from "@/lib/site-url";
 import { publicArticle } from "@/server/blog-agent/public";
 
@@ -13,9 +16,11 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const article = await publicArticle(slug);
-  if (!article) return { title: "Artigo não encontrado", robots: { index: false, follow: false } };
+  if (!article) return { title: "Artigo não encontrado", alternates: { canonical: null, languages: {} }, robots: { index: false, follow: false } };
+  if (await getLocale() !== ORIGINAL_ARTICLE_LOCALE) permanentRedirect(contentPath(`/blog/${article.slug}`, ORIGINAL_ARTICLE_LOCALE));
   const siteUrl = getSiteUrl();
-  const canonical = siteUrl ? new URL(`/blog/${article.slug}`, siteUrl).toString() : undefined;
+  const alternates = seoAlternates(`/blog/${article.slug}`, ORIGINAL_ARTICLE_LOCALE);
+  const canonical = alternates.canonical;
   const artwork = article.coverImage?.provider === "local-ai" ? article.coverImage : null;
   const shareImagePath = artwork?.imageUrl ?? "/marca/linha-de-jogo-nova.jpg";
   const shareImage = siteUrl ? new URL(shareImagePath, siteUrl).toString() : artwork ? shareImagePath : undefined;
@@ -23,7 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: article.editorialType === "news" ? { absolute: article.seoTitle || article.title } : article.seoTitle || article.title,
     description: article.seoDescription || article.summary,
     ...(article.editorialType === "news" ? { keywords: article.seoKeyword ? [article.seoKeyword, ...(article.tags ?? [])] : article.tags } : {}),
-    alternates: canonical ? { canonical } : undefined,
+    alternates,
     openGraph: {
       type: "article",
       url: canonical,
@@ -47,6 +52,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const article = await publicArticle(slug);
   if (!article) notFound();
+  if (await getLocale() !== ORIGINAL_ARTICLE_LOCALE) permanentRedirect(contentPath(`/blog/${article.slug}`, ORIGINAL_ARTICLE_LOCALE));
   const news = article.editorialType === "news";
 
   return (

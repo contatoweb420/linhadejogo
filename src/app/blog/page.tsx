@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/localized-link";
 import { Cover } from "@/components/cover";
 import { EditorialImage } from "@/components/editorial-image";
 import { BLOG_CATEGORIES, type Article } from "@/content/articles";

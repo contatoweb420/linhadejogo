@@ -9,15 +9,16 @@ const root = fileURLToPath(new URL("../../", import.meta.url));
 const dataDir = await mkdtemp(path.join(tmpdir(), "linha-e2e-"));
 await writeFile(path.join(dataDir, "artigos.json"), "[]");
 await writeFile(path.join(dataDir, "execucoes.json"), "[]");
+const production = process.env.E2E_PRODUCTION_BUILD === "1";
 const child = spawn(process.execPath, [
   path.join(root, "node_modules/next/dist/bin/next"),
-  "dev", "--hostname", "127.0.0.1", "--port", "3101",
+  ...(production ? ["start"] : ["dev"]), "--hostname", "127.0.0.1", "--port", "3101",
 ], {
   cwd: root,
   stdio: "inherit",
   env: {
     ...process.env,
-    NODE_ENV: "development",
+    NODE_ENV: production ? "production" : "development",
     E2E_TEST_MODE: "1",
     BLOG_AGENT_DATA_DIR: dataDir,
     DATABASE_URL: "",
@@ -31,7 +32,7 @@ const child = spawn(process.execPath, [
     RECOLHA_SEGREDO: "local-playwright-only-not-a-real-secret",
     DB_DIAGNOSTIC_SECRET: "",
     VERCEL_ENV: "development",
-    NEXT_PUBLIC_SITE_URL: "http://127.0.0.1:3101",
+    NEXT_PUBLIC_SITE_URL: production ? "" : "http://127.0.0.1:3101",
     NEXT_PUBLIC_INSTAGRAM_URL: "",
     NEXT_PUBLIC_TIKTOK_URL: "",
     NEXT_TELEMETRY_DISABLED: "1",

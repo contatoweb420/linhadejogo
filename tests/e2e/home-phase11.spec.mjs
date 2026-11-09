@@ -28,8 +28,8 @@ test("switching locale and unprefixed redirects retain parameters", async ({ pag
   await expect(page.locator("html")).toHaveAttribute("lang", "en-US");
   await expect(page).toHaveURL(/\/en-us\?data=2026-11-04&competicao=PPL&x=1&x=2$/);
   await page.goto("/?data=2026-11-04&competicao=PPL&x=1&x=2");
-  await expect(page).toHaveURL(/\/en-us\?data=2026-11-04&competicao=PPL&x=1&x=2$/);
-  await expect(page.locator("html")).toHaveAttribute("lang", "en-US");
+  await expect(page).toHaveURL(/\/pt-br\?data=2026-11-04&competicao=PPL&x=1&x=2$/);
+  await expect(page.locator("html")).toHaveAttribute("lang", "pt-BR");
 });
 
 test("saved games remain interactive while secondary content is still pending", async ({ page }) => {

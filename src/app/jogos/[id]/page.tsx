@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/localized-link";
 import { notFound } from "next/navigation";
 import { Crest } from "@/components/crest";
 import { FormMarks } from "@/components/form-marks";

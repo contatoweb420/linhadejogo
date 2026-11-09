@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/localized-link";
 import { Icon, type IconName } from "@/components/sport-icon";
 import { localePrefix, translate, type Locale } from "@/lib/i18n";
 const items: {

@@ -1,4 +1,6 @@
-import Link from "next/link";
+import { localizedPath } from "@/lib/i18n";
+import { getLocale } from "@/lib/get-locale";
+import Link from "@/components/localized-link";
 import { redirect } from "next/navigation";
 import { SetupPanel } from "@/components/setup-panel";
 import { pingDatabase } from "@/server/db/client";
@@ -10,6 +12,7 @@ export const dynamic = "force-dynamic";
 export const metadata = { title: "Análise de jogos", description: "Consulte uma leitura estatística dos jogos de futebol disponíveis, com contexto e limites da amostra." };
 
 export default async function AnalysisEntryPage() {
+  const locale = await getLocale();
   const database = await pingDatabase();
   if (!database) return <SetupPanel database={database} />;
 
@@ -18,7 +21,7 @@ export default async function AnalysisEntryPage() {
   const upcoming = matches.filter((match) => matchGroup(match.status) === "upcoming");
   const finished = matches.filter((match) => matchGroup(match.status) === "finished");
   const lead = live[0] ?? upcoming[0] ?? finished[finished.length - 1] ?? null;
-  if (lead) redirect(`/jogos/${lead.externalId}`);
+  if (lead) redirect(localizedPath(`/jogos/${lead.externalId}`, locale));
 
   return (
     <div className="grid gap-3">

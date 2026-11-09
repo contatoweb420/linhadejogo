@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/localized-link";
 import { getSocialProfileLinks } from "@/lib/social-links";
 import { localePrefix, translate, type Locale } from "@/lib/i18n";
 

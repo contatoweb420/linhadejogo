@@ -1,3 +1,5 @@
+import { ORIGINAL_ARTICLE_LOCALE } from "@/content/article-locales";
+import { localePrefixes } from "@/lib/i18n";
 import { NextResponse, type NextRequest } from "next/server";
 
 const locales = ["pt-br", "pt-pt", "en-us"] as const;
@@ -26,6 +28,12 @@ export function proxy(request: NextRequest) {
   }
   if (locales.includes(first as (typeof locales)[number])) {
     const locale = first as (typeof locales)[number];
+    // Resolve unavailable article locales before rendering/streaming any HTML.
+    if (segments[1] === "blog" && segments.length > 2 && locale !== localePrefixes[ORIGINAL_ARTICLE_LOCALE]) {
+      const original = new URL(request.url);
+      original.pathname = `/${localePrefixes[ORIGINAL_ARTICLE_LOCALE]}/${segments.slice(1).join("/")}`;
+      return NextResponse.redirect(original, 308);
+    }
     const destination = new URL(request.url);
     // NextURL normalizes loopback hosts to localhost. Keep rewrites on the
     // incoming origin, including when development is accessed via 127.0.0.1.
@@ -41,12 +49,11 @@ export function proxy(request: NextRequest) {
     return response;
   }
 
-  const saved = request.cookies.get(localeCookie)?.value;
-  const locale = locales.includes(saved as (typeof locales)[number]) ? saved! : "pt-br";
+  const locale = pathname.startsWith("/blog/") ? localePrefixes[ORIGINAL_ARTICLE_LOCALE] : "pt-br";
   const destination = new URL(request.url);
   if (request.headers.get("host")) destination.host = request.headers.get("host")!;
   destination.pathname = `/${locale}${pathname === "/" ? "" : pathname}`;
-  return NextResponse.redirect(destination);
+  return NextResponse.redirect(destination, 308);
 }
 
 export const config = { matcher: ["/((?!api|_next/static|_next/image|.*\\..*).*)"] };

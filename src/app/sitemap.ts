@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getSiteUrl } from "@/lib/site-url";
 import { publicArticles } from "@/server/blog-agent/public";
 import { competitionTable, listCompetitions } from "@/server/queries";
-import { localePrefixes, locales } from "@/lib/i18n";
+import { availableLocales, seoAlternates, seoUrl, contentPath } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +10,6 @@ const publicPaths = [
   "/",
   "/jogos",
   "/competicoes",
-  "/analise",
   "/avaliacao",
   "/blog",
   "/noticias",
@@ -35,13 +34,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...articles.map((article) => `/blog/${article.slug}`),
   ];
   return paths.flatMap((path) => {
-    const languageAlternates = Object.fromEntries([
-      ...locales.map((locale) => [locale, new URL(`/${localePrefixes[locale]}${path === "/" ? "" : path}`, base).toString()]),
-      ["x-default", new URL(`/pt-br${path === "/" ? "" : path}`, base).toString()],
-    ]);
-    return locales.map((locale) => ({
-      url: new URL(`/${localePrefixes[locale]}${path === "/" ? "" : path}`, base).toString(),
-      alternates: { languages: languageAlternates },
+    return availableLocales(path).map((locale) => ({
+      url: seoUrl(contentPath(path, locale)),
+      alternates: { languages: seoAlternates(path, locale).languages },
       ...(path.startsWith("/blog/") ? { lastModified: articles.find((article) => path === `/blog/${article.slug}`)?.updatedAt } : {}),
     }));
   });

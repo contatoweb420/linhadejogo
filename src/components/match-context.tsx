@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/localized-link";
 import { newsForMatch, readNews } from "@/server/news/store";
 
 export async function MatchContext({ names }: { names: string[] }) {

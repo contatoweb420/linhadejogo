@@ -1,7 +1,7 @@
 "use client";
 
 import Script from "next/script";
-import Link from "next/link";
+import Link from "@/components/localized-link";
 import { useEffect, useState } from "react";
 import { consentKey, measurementId, updateAnalyticsConsent } from "@/lib/analytics";
 import { localePrefix, type Locale } from "@/lib/i18n";

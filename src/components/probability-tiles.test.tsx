@@ -62,7 +62,7 @@ describe("games list", () => {
   it("shows the actual list estimates as tiles and retains the match link", async () => {
     const html = renderToStaticMarkup(await MatchCard({ match: { ...match, estimate: { home: 53.1, draw: 22.4, away: 24.5 } } }));
     expect(displayedShares(html)).toEqual([53.1, 22.4, 24.5]);
-    expect(html).toContain('href="/jogos/42"');
+    expect(html).toContain('href="/pt-br/jogos/42"');
     expect(html).toContain("1–0");
   });
   it("never invents percentages for an insufficient model sample", async () => {

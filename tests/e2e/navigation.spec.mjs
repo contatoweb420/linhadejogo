@@ -8,6 +8,8 @@ test("redirects an unprefixed page to the default language", async ({ page }) =>
 
 test("navigates from the menu on desktop and mobile", async ({ page, isMobile }) => {
   await page.goto("/pt-br/sobre");
+  // Resolve the real consent dialog before using the fixed mobile navigation.
+  await page.getByRole("button", { name: "Recusar analytics", exact: true }).click();
   const menu = page.getByRole("navigation", { name: isMobile ? "Navegação principal" : "Secções", exact: true });
   await menu.getByRole("link", { name: "Jogos", exact: true }).click();
   await expect(page).toHaveURL(/\/pt-br\/jogos$/);

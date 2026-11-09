@@ -68,8 +68,15 @@ jobs:
       - name: Instalar Chromium e bibliotecas do sistema
         run: npx --no-install playwright install --with-deps chromium
 
+      - name: Compilar build isolado para testes de browser
+        run: npm run build
+        env:
+          E2E_TEST_MODE: '1'
+
       - name: Executar testes de browser
         run: npm run test:e2e
+        env:
+          E2E_PRODUCTION_BUILD: '1'
 
       - name: Guardar relatório, screenshots, vídeos e traces
         if: ${{ !cancelled() }}

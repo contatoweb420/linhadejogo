@@ -12,13 +12,13 @@ for (const [prefix, language, button] of [
   });
 }
 
-test("switches language and remembers it on an unprefixed visit", async ({ page }) => {
+test("switches language explicitly and uses a stable default for legacy URLs", async ({ page }) => {
   await page.goto("/pt-br/sobre");
   await page.getByRole("button", { name: /Portugal/ }).click();
   await expect(page).toHaveURL(/\/pt-pt\/sobre$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "pt-PT");
   await page.goto("/sobre");
-  await expect(page).toHaveURL(/\/pt-pt\/sobre$/);
+  await expect(page).toHaveURL(/\/pt-br\/sobre$/);
 });
 
 test("keeps the calendar date through the localized rewrite", async ({ page }) => {

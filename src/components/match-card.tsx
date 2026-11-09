@@ -1,7 +1,7 @@
 import { ProbabilityTiles } from "@/components/probability-tiles";
 import { getLocale } from "@/lib/get-locale";
 import type { Locale } from "@/lib/i18n";
-import Link from "next/link";
+import Link from "@/components/localized-link";
 import { Crest } from "@/components/crest";
 import { formatLisbonTime, formatStatus, isLiveStatus, matchGroup } from "@/server/format/pt";
 import type { ShareEstimate } from "@/server/estimates";

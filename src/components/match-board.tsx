@@ -1,4 +1,4 @@
-import Link from "next/link";
+import Link from "@/components/localized-link";
 import { MatchCard, type MatchCardData } from "@/components/match-card";
 import { formatCountry, matchGroup } from "@/server/format/pt";
 
