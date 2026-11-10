@@ -20,7 +20,7 @@ export function SiteHeader({ locale, pathname }: { locale: Locale; pathname: str
     <header className="site-header chrome">
       <div className="site-header__inner">
         <Link href={prefix} className="brand-lockup site-header__brand" aria-label="Linha de Jogo">
-          <BrandMark />
+          <BrandMark primary />
         </Link>
         <nav className="desktop-nav" aria-label={locale === "en-US" ? "Main navigation" : "Navegação principal"}>
           {links.map(link => {
