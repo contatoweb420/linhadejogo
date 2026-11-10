@@ -1,11 +1,11 @@
 import Image from "next/image";
 import mark from "../../public/logo-nova.png";
-import primaryMark from "../../public/marca/linha-de-jogo-cabecalho.png";
+import primaryMark from "../../public/marca/linha-de-jogo-cabecalho-v2.png";
 
 export function BrandMark({ compact = false, primary = false }: { compact?: boolean; primary?: boolean }) {
   if (primary) return (
     <span style={{ display: "block", position: "relative", width: "100%", aspectRatio: "1088 / 256", overflow: "hidden" }}>
-      <Image src={primaryMark} alt="Linha de Jogo" width={1088} height={1088} unoptimized
+      <Image src={primaryMark} alt="Linha de Jogo" width={663} height={376} unoptimized
         style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", width: "100%", height: "auto" }} />
     </span>
   );
