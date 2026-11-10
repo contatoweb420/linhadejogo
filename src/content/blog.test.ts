@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { articles } from "./articles";
+import { footballWeekArticles } from "./football-week-20261109";
 import { getPublishedArticle, listPublished, queryArticles } from "./blog";
 
 describe("blog local", () => {
@@ -10,11 +12,13 @@ describe("blog local", () => {
   });
 
   it("destaca o mais recente e pagina o resto", () => {
-    const listing = queryArticles({});
+    const newSlugs = new Set(footballWeekArticles.map(article => article.slug));
+    const historical = articles.filter(article => !newSlugs.has(article.slug));
+    const listing = queryArticles({}, historical.filter(article => article.status === "publicado").sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)));
     expect(listing.featured?.slug).toBe("cristiano-ronaldo-despede-se-selecao-portuguesa");
     expect(listing.items).toHaveLength(4);
     expect(listing.pages).toBe(2);
-    const second = queryArticles({ page: 2 });
+    const second = queryArticles({ page: 2 }, historical.filter(article => article.status === "publicado").sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)));
     expect(second.featured).toBeNull();
     expect(second.items).toHaveLength(2);
     expect(second.items.some((article) => article.slug === listing.featured?.slug)).toBe(false);

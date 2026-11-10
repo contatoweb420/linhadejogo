@@ -14,6 +14,9 @@ export type EditorialImage = {
   licenseUrl: string;
   licenseVerified: true;
   checkedAt: string;
+  caption?: string;
+  width?: number;
+  height?: number;
 };
 
 /** Manually supplied artwork; it does not claim photographic provenance or a stock licence. */

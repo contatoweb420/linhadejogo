@@ -8,6 +8,7 @@ import { formatArticleDate } from "@/content/blog";
 import { getLocale } from "@/lib/get-locale";
 import { ORIGINAL_ARTICLE_LOCALE } from "@/content/article-locales";
 import { seoAlternates, contentPath } from "@/lib/seo";
+import { newsArticleSchema, serializeNewsSchema } from "@/lib/news-article-schema";
 import { getSiteUrl } from "@/lib/site-url";
 import { publicArticle } from "@/server/blog-agent/public";
 
@@ -21,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const siteUrl = getSiteUrl();
   const alternates = seoAlternates(`/blog/${article.slug}`, ORIGINAL_ARTICLE_LOCALE);
   const canonical = alternates.canonical;
-  const artwork = article.coverImage?.provider === "local-ai" ? article.coverImage : null;
+  const artwork = article.coverImage && (article.coverImage.provider === "local-ai" || article.coverImage.licenseVerified) ? article.coverImage : null;
   const shareImagePath = artwork?.imageUrl ?? "/marca/linha-de-jogo-nova.jpg";
   const shareImage = siteUrl ? new URL(shareImagePath, siteUrl).toString() : artwork ? shareImagePath : undefined;
   return {
@@ -54,9 +55,11 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   if (!article) notFound();
   if (await getLocale() !== ORIGINAL_ARTICLE_LOCALE) permanentRedirect(contentPath(`/blog/${article.slug}`, ORIGINAL_ARTICLE_LOCALE));
   const news = article.editorialType === "news";
+  const structuredData = newsArticleSchema(article);
 
   return (
     <article className="mx-auto grid max-w-3xl gap-5">
+      {structuredData ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: serializeNewsSchema(structuredData) }} /> : null}
       <p className="text-sm">
         <Link href="/blog" className="text-accent underline-offset-4 hover:underline">
           Notícias e análises
@@ -79,7 +82,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           {" · "}Atualizado em <time dateTime={article.updatedAt}>{formatArticleDate(article.updatedAt)}</time>
         </p>
       </header>
-      {article.coverImage && (article.coverImage.provider === "local-ai" || article.coverImage.licenseVerified) ? <EditorialImage image={article.coverImage} /> : <Cover scene={article.cover} label={article.title} />}
+      {article.coverImage && (article.coverImage.provider === "local-ai" || article.coverImage.licenseVerified) ? <EditorialImage image={article.coverImage} priority={Boolean(article.verifiedAt)} /> : <Cover scene={article.cover} label={article.title} />}
       {!news ? <p className="text-base leading-7">{article.summary}</p> : null}
       {!news ? <figure className="grid gap-2">
         <Cover scene={inlineScene(article.cover)} label={illustrationAlt(inlineScene(article.cover))} />
@@ -90,6 +93,10 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
           <Block key={`${block.type}-${index}`} block={block} editorial={news} />
         ))}
       </div>
+      {article.relatedLinks?.length ? <section className="grid gap-3 border-t border-line pt-5" aria-label="Ligações relacionadas">
+        <h2 className="font-serif text-xl">Explore também</h2>
+        <ul className="grid gap-2 text-sm">{article.relatedLinks.map(item => <li key={item.href}><Link href={item.href} className="text-accent underline underline-offset-4">{item.label}</Link></li>)}</ul>
+      </section> : null}
       {news && article.tags?.length ? <ul aria-label="Etiquetas" className="flex flex-wrap gap-2">
         {article.tags.map(tag => <li key={tag} className="rounded-full border border-line bg-card px-3 py-1 text-xs text-accent">{tag}</li>)}
       </ul> : null}
@@ -137,6 +144,7 @@ function illustrationAlt(scene: string) {
 
 function Block({ block, editorial = false }: { block: ArticleBlock; editorial?: boolean }) {
   if (block.type === "h2") return <h2 className={editorial ? "mt-4 border-b border-line pb-3 font-serif text-2xl text-foreground" : "text-xl"}>{block.text}</h2>;
+  if (block.type === "h3") return <h3 className={editorial ? "mt-2 font-serif text-xl text-foreground" : "text-lg"}>{block.text}</h3>;
   if (block.type === "ul") {
     return (
       <ul className={editorial ? "list-disc space-y-3 border-l-2 border-accent bg-card py-4 pl-8 pr-4 font-semibold" : "list-disc space-y-1 pl-5"}>

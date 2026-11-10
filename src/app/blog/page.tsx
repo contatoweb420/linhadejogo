@@ -97,9 +97,11 @@ export default async function BlogPage({ searchParams }: { searchParams: Promise
 function Featured({ article }: { article: Article }) {
   return (
     <article className="grid gap-4 border border-line bg-card p-4 lg:grid-cols-[1.3fr_1fr] lg:items-center">
-      <Link href={`/blog/${article.slug}`} aria-label={article.title}>
-        {article.coverImage?.provider === "local-ai" ? <EditorialImage image={article.coverImage} /> : <Cover scene={article.cover} label={article.title} />}
-      </Link>
+      {article.coverImage?.licenseVerified ? <EditorialImage image={article.coverImage} href={`/blog/${article.slug}`} /> : (
+        <Link href={`/blog/${article.slug}`} aria-label={article.title}>
+          {article.coverImage?.provider === "local-ai" ? <EditorialImage image={article.coverImage} /> : <Cover scene={article.cover} label={article.title} />}
+        </Link>
+      )}
       <div className="grid gap-2">
         <p className="text-xs font-semibold uppercase tracking-wide text-accent">Destaque · {article.example ? "Artigo de exemplo" : article.editorialType === "news" ? "Notícia editorial" : "Análise"}</p>
         <h2 className="font-serif text-3xl">
@@ -117,9 +119,11 @@ function Featured({ article }: { article: Article }) {
 function ArticleCard({ article }: { article: Article }) {
   return (
     <article className="grid h-full gap-3 border border-line bg-card p-3">
-      <Link href={`/blog/${article.slug}`} aria-label={article.title}>
-        {article.coverImage?.provider === "local-ai" ? <EditorialImage image={article.coverImage} /> : <Cover scene={article.cover} label={article.title} />}
-      </Link>
+      {article.coverImage?.licenseVerified ? <EditorialImage image={article.coverImage} href={`/blog/${article.slug}`} /> : (
+        <Link href={`/blog/${article.slug}`} aria-label={article.title}>
+          {article.coverImage?.provider === "local-ai" ? <EditorialImage image={article.coverImage} /> : <Cover scene={article.cover} label={article.title} />}
+        </Link>
+      )}
       <div className="grid gap-2">
         <p className="text-xs font-semibold uppercase tracking-wide text-muted">{article.category}</p>
         <h2 className="text-lg">

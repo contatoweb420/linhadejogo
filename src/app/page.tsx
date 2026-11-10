@@ -287,12 +287,21 @@ function scoreLabel(match: DayMatch, locale: Locale) {
 
 async function HomeNews({ locale }: { locale: Locale }) {
   const t = (text: string) => homeText(locale, text);
-  const news = (await readNews()).slice(0, 3);
+  const [feed, published] = await Promise.all([readNews(), publicArticles()]);
+  const news = feed.slice(0, 3);
+  const editorial = published.filter(article => article.editorialType === "news" && article.verifiedAt).slice(0, 3);
   return (
     <section className="premium-panel editorial-section">
       <SectionHead title={t("Notícias")} href="/noticias" action={t("Ver notícias")} locale={locale} />
+      {editorial.length > 0 ? <ul className="news-list">{editorial.map((article, index) => <li key={article.slug}>
+        <span className="news-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span><div>
+          <p className="text-xs text-muted">{article.author}</p>
+          <h3 className="mt-1 font-serif text-xl"><Link href={`/blog/${article.slug}`} className="hover:underline">{article.title}</Link></h3>
+          <p className="mt-2 text-sm text-muted">{article.summary}</p>
+        </div>
+      </li>)}</ul> : null}
       {news.length === 0 ? (
-        <p className="border border-line bg-card px-4 py-6 text-sm text-muted">{t("Não há notícias relevantes confirmadas encontradas.")}</p>
+        editorial.length === 0 ? <p className="border border-line bg-card px-4 py-6 text-sm text-muted">{t("Não há notícias relevantes confirmadas encontradas.")}</p> : null
       ) : (
         <ul className="news-list">
           {news.map((item, index) => (
@@ -325,7 +334,7 @@ async function HomeArticles({ locale }: { locale: Locale }) {
         {articles.map((article) => (
           <li key={article.slug}>
             <article className="premium-panel reading-card">
-              {article.coverImage?.provider === "local-ai" ? <EditorialImage image={article.coverImage} /> : <Cover scene={article.cover} label={article.title} />}
+              {article.coverImage && (article.coverImage.provider === "local-ai" || article.coverImage.licenseVerified) ? <EditorialImage image={article.coverImage} /> : <Cover scene={article.cover} label={article.title} />}
               <div className="reading-card__body"><p className="panel-kicker">{article.category}</p>
               <h3 className="font-serif text-xl">
                 <Link href={homeHref(`/blog/${article.slug}`, locale)} className="hover:underline">

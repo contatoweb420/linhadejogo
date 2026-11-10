@@ -1,3 +1,4 @@
+import { footballWeekArticles } from "./football-week-20261109";
 import type { CoverScene } from "@/components/cover";
 import type { ArticleImage } from "@/server/images/providers";
 
@@ -9,6 +10,7 @@ export type ArticleStatus = "publicado" | "rascunho";
 export type ArticleBlock =
   | { type: "p"; text: string }
   | { type: "h2"; text: string }
+  | { type: "h3"; text: string }
   | { type: "ul"; items: string[] };
 
 export type ArticleSource = {
@@ -36,6 +38,10 @@ export type Article = {
   seoDescription?: string;
   seoKeyword?: string;
   tags?: string[];
+  /** Present only for newsroom articles whose sources were checked. */
+  verifiedAt?: string;
+  referencePeriod?: { start: string; end: string };
+  relatedLinks?: { label: string; href: string }[];
 };
 
 const exampleSource: ArticleSource = {
@@ -44,6 +50,7 @@ const exampleSource: ArticleSource = {
 };
 
 export const articles: Article[] = [
+  ...footballWeekArticles,
   {
     title: "Como ler uma estimativa de casa, empate e visita",
     slug: "como-ler-uma-estimativa",

@@ -1,0 +1,99 @@
+[
+  {
+    "url": "https://comofootball.com/en/fixtures-and-results/",
+    "status": 200,
+    "finalUrl": "https://comofootball.com/en/fixtures-and-results/"
+  },
+  {
+    "url": "https://fbref.com/en/matches/6aeb3583/Manchester-United-Aston-Villa-November-8-2026-Premier-League",
+    "status": 403
+  },
+  {
+    "url": "https://theanalyst.com/articles/manchester-united-4-4-aston-villa-stats-premier-league-11-2026",
+    "status": 403
+  },
+  {
+    "url": "https://www.aa.com.tr/en/sports/inter-beat-como-2-0-to-climb-to-2nd-place-in-serie-a/4116357",
+    "status": 200,
+    "finalUrl": "https://www.aa.com.tr/en/sports/inter-beat-como-2-0-to-climb-to-2nd-place-in-serie-a/4116357"
+  },
+  {
+    "url": "https://www.ansa.it/english/news/sports/2026/11/09/inter-and-roma-close-in-after-leaders-lazio-held-at-napoli_ca2796a4-b543-45eb-b03d-1317c3d11cbc.html",
+    "status": 200,
+    "finalUrl": "https://www.ansa.it/english/news/sports/2026/11/09/inter-and-roma-close-in-after-leaders-lazio-held-at-napoli_ca2796a4-b543-45eb-b03d-1317c3d11cbc.html"
+  },
+  {
+    "url": "https://www.avfc.co.uk/news/2026/november/08/report-manchester-united-4-4-aston-villa/",
+    "status": 200,
+    "finalUrl": "https://www.avfc.co.uk/news/2026/november/08/report-manchester-united-4-4-aston-villa/"
+  },
+  {
+    "url": "https://www.corrieredellosport.it/news/calcio/serie-a/2026/11/08-152462283/napoli-lazio_diretta_serie_a_segui_la_sfida_tra_allegri_e_gattuso_il_risultato_live",
+    "status": 200,
+    "finalUrl": "https://www.corrieredellosport.it/news/calcio/serie-a/2026/11/08-152462283/napoli-lazio_diretta_serie_a_segui_la_sfida_tra_allegri_e_gattuso_il_risultato_live"
+  },
+  {
+    "url": "https://www.fcbarcelona.com/en/football/first-team/news/4606439/atletico-madrid-1-2-fc-barcelona-comeback-to-stay-top",
+    "status": 200,
+    "finalUrl": "https://www.fcbarcelona.com/en/football/first-team/news/4606439/atletico-madrid-1-2-fc-barcelona-comeback-to-stay-top"
+  },
+  {
+    "url": "https://www.fcbarcelona.com/en/football/first-team/news/4606581/100-league-games-and-a-brace-for-fermin/featured",
+    "status": 200,
+    "finalUrl": "https://www.fcbarcelona.com/en/football/first-team/news/4606581/100-league-games-and-a-brace-for-fermin/featured"
+  },
+  {
+    "url": "https://www.fcbarcelona.com/en/football/first-team/news/4606585/hansi-flick-i-believe-in-this-team",
+    "status": 200,
+    "finalUrl": "https://www.fcbarcelona.com/en/football/first-team/news/4606585/hansi-flick-i-believe-in-this-team"
+  },
+  {
+    "url": "https://www.fcbarcelona.com/en/football/first-team/news/4606828/hansi-flicks-barca-pull-off-another-comeback",
+    "status": 200,
+    "finalUrl": "https://www.fcbarcelona.com/en/football/first-team/news/4606828/hansi-flicks-barca-pull-off-another-comeback"
+  },
+  {
+    "url": "https://www.inter.it/en/match_center/5379/inter-como",
+    "status": 200,
+    "finalUrl": "https://www.inter.it/en/match_center/5379/inter-como"
+  },
+  {
+    "url": "https://www.lavanguardia.com/deportes/futbol/20261108/11679150/atletico-de-madrid-barcelona-laliga-ea-sports-partido-futbol-hoy-en-directo.html",
+    "status": 200,
+    "finalUrl": "https://www.lavanguardia.com/deportes/futbol/20261108/11679150/atletico-de-madrid-barcelona-laliga-ea-sports-partido-futbol-hoy-en-directo.html"
+  },
+  {
+    "url": "https://www.manutd.com/en/matches/mens-team/fixtures?competition=premier-league&month=2026-11",
+    "status": 200,
+    "finalUrl": "https://www.manutd.com/en/matches/mens-team/fixtures?competition=premier-league&month=2026-11"
+  },
+  {
+    "url": "https://www.psg.fr/en/content/compte-rendu-paris-soffre-une-victoire-record-a-villarreal-cf-paris-saint-germain-uefa-champions-league-2026-2027",
+    "status": 200,
+    "finalUrl": "https://www.psg.fr/en/content/compte-rendu-paris-soffre-une-victoire-record-a-villarreal-cf-paris-saint-germain-uefa-champions-league-2026-2027"
+  },
+  {
+    "url": "https://www.skysports.com/football/manchester-united-vs-aston-villa/559541",
+    "status": 405
+  },
+  {
+    "url": "https://www.uefa.com/uefachampionsleague/news/0240-0e935cdfe0e3-72b3c5cde380-1000--biggest-champions-league-wins-lens-1-9-como-liverpool-8-0-be/",
+    "error": "The read operation timed out"
+  },
+  {
+    "url": "https://www.uefa.com/uefachampionsleague/news/02a9-218f8e669a0a-debba167a199-1000--champions-league-top-scorer-harry-kane-erling-haaland-part/",
+    "error": "The read operation timed out"
+  },
+  {
+    "url": "https://www.uefa.com/uefachampionsleague/news/02ab-21fc4afdbe57-11bbecf54b40-1000--champions-league-highlights-and-round-up-paris-remain-per/",
+    "error": "The read operation timed out"
+  },
+  {
+    "url": "https://www.uefa.com/uefachampionsleague/news/02ab-21fe508a035b-5eed0199e0b2-1000--champions-league-round-up-como-equal-biggest-ever-win-real/",
+    "error": "The read operation timed out"
+  },
+  {
+    "url": "https://www.uefa.com/uefachampionsleague/news/02ab-21ffc4d13078-f364fb616e28-1000--champions-league-team-of-the-week-matchday-4/",
+    "error": "The read operation timed out"
+  }
+]
