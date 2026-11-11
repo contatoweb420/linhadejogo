@@ -1,5 +1,5 @@
-import { HudLoader } from "@/components/hud-loader";
+import { FootballLoader } from "@/components/football-loader";
 
 export default function Loading() {
-  return <HudLoader variant="compact" label="A carregar as notícias guardadas." />;
+  return <FootballLoader label="A carregar as notícias guardadas." />;
 }

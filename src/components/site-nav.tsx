@@ -2,10 +2,9 @@
 
 import Link from "@/components/localized-link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState, useSyncExternalStore, type ReactNode, type RefObject } from "react";
+import { useEffect, useRef, useSyncExternalStore, type ReactNode, type RefObject } from "react";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { HudLoader } from "@/components/hud-loader";
 import { localePrefix, translate, type Locale } from "@/lib/i18n";
 import { LocaleProvider } from "@/components/locale-context";
 
@@ -64,109 +63,9 @@ function writeCollapsed(collapsed: boolean) {
 }
 
 export function AppShell({ children, locale, homeHero, homeSidebar }: { children: ReactNode; locale: Locale; homeHero?: ReactNode; homeSidebar?: ReactNode }) {
-  const t = (text: string) => translate(locale, text);
   const collapsed = useSyncExternalStore(subscribe, readCollapsed, () => false);
   const pathname = usePathname();
   const home = stripLocale(pathname) === "/";
-  const [hud, setHud] = useState<{ progress: number; phase: "loading" | "exit"; label: string } | null>({
-    progress: 8,
-    phase: "loading",
-    label: t("A iniciar o painel."),
-  });
-  const previousPathname = useRef(pathname);
-  const pendingNavigation = useRef(false);
-  const hideHudTimer = useRef<number | null>(null);
-
-  useEffect(() => {
-    let finished = false;
-    const finishInitialLoad = () => {
-      if (finished || pendingNavigation.current) return;
-      if (home && !document.querySelector("[data-home-ready]")) return;
-      finished = true;
-      observer.disconnect();
-      pendingNavigation.current = false;
-      setHud((current) => current ? { ...current, progress: 100, phase: "exit" } : null);
-      hideHudTimer.current = window.setTimeout(() => setHud(null), 440);
-    };
-
-    const observer = new MutationObserver(finishInitialLoad);
-    if (home) {
-      observer.observe(document.body, { childList: true, subtree: true });
-      finishInitialLoad();
-    } else if (document.readyState === "complete") finishInitialLoad();
-    else window.addEventListener("load", finishInitialLoad, { once: true });
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("load", finishInitialLoad);
-      if (hideHudTimer.current !== null) window.clearTimeout(hideHudTimer.current);
-    };
-  }, [home]);
-
-  useEffect(() => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-
-    const timer = window.setInterval(() => {
-      setHud((current) => current && current.phase === "loading"
-        ? { ...current, progress: Math.min(96, current.progress + Math.max(1, (96 - current.progress) * 0.14)) }
-        : current);
-    }, 120);
-    return () => window.clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    if (previousPathname.current === pathname) return;
-    previousPathname.current = pathname;
-    if (!pendingNavigation.current) return;
-
-    if (hideHudTimer.current !== null) window.clearTimeout(hideHudTimer.current);
-    const main = document.querySelector("#conteudo");
-    let finished = false;
-    const finishNavigation = () => {
-      if (finished || main?.querySelector(".hud-loader--compact")) return;
-      finished = true;
-      pendingNavigation.current = false;
-      observer.disconnect();
-      setHud((current) => current ? { ...current, progress: 100, phase: "exit" } : null);
-      hideHudTimer.current = window.setTimeout(() => setHud(null), 440);
-    };
-    const observer = new MutationObserver(finishNavigation);
-    if (main) observer.observe(main, { childList: true, subtree: true });
-    const frame = window.requestAnimationFrame(finishNavigation);
-    return () => {
-      observer.disconnect();
-      window.cancelAnimationFrame(frame);
-    };
-  }, [pathname]);
-
-  useEffect(() => {
-    const beginNavigation = () => {
-      pendingNavigation.current = true;
-      if (hideHudTimer.current !== null) window.clearTimeout(hideHudTimer.current);
-      setHud({ progress: 8, phase: "loading", label: translate(locale, "A carregar a secção pedida.") });
-    };
-
-    const onClick = (event: MouseEvent) => {
-      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-      const target = event.target;
-      if (!(target instanceof Element)) return;
-      const anchor = target.closest<HTMLAnchorElement>("a[href]");
-      if (!anchor || anchor.target && anchor.target !== "_self" || anchor.hasAttribute("download")) return;
-
-      const destination = new URL(anchor.href, window.location.href);
-      if (destination.origin !== window.location.origin || destination.pathname === window.location.pathname) return;
-      beginNavigation();
-    };
-
-    const onPopState = () => beginNavigation();
-    document.addEventListener("click", onClick, true);
-    window.addEventListener("popstate", onPopState);
-    return () => {
-      document.removeEventListener("click", onClick, true);
-      window.removeEventListener("popstate", onPopState);
-    };
-  }, [locale]);
-
   const content = <main id="conteudo" className={home ? "site-main home-center" : "site-main"}>{children}</main>;
 
   return (
@@ -184,7 +83,6 @@ export function AppShell({ children, locale, homeHero, homeSidebar }: { children
       </div>
       <SiteFooter locale={locale} />
       <MobileNav pathname={stripLocale(pathname)} locale={locale} />
-      {hud ? <HudLoader variant="compact" progress={hud.progress} phase={hud.phase} label={hud.label} /> : null}
     </div>
     </LocaleProvider>
   );

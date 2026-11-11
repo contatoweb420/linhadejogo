@@ -1,5 +1,5 @@
-import { HudLoader } from "@/components/hud-loader";
+import { FootballLoader } from "@/components/football-loader";
 
 export default function LoadingCompetition() {
-  return <HudLoader variant="compact" label="A carregar a classificação e o calendário guardados." />;
+  return <FootballLoader label="A carregar a classificação e o calendário guardados." />;
 }

@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="night" x2="0" y2="1"><stop stop-color="#07101c"/><stop offset="1" stop-color="#163335"/></linearGradient>
+    <linearGradient id="grass" x2="0.25" y2="1"><stop stop-color="#34795a"/><stop offset="1" stop-color="#123e2f"/></linearGradient>
+    <linearGradient id="beam" x2="0.25" y2="1"><stop stop-color="#ceeeff" stop-opacity=".18"/><stop offset="1" stop-color="#bce8ff" stop-opacity="0"/></linearGradient>
+    <radialGradient id="leather" cx=".3" cy=".23" r=".8"><stop stop-color="#fff"/><stop offset=".45" stop-color="#f1f3f2"/><stop offset=".8" stop-color="#b5c2c5"/><stop offset="1" stop-color="#566b75"/></radialGradient>
+    <radialGradient id="shine" cx=".27" cy=".2" r=".8"><stop stop-color="#fff" stop-opacity=".5"/><stop offset=".45" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#03101b" stop-opacity=".6"/></radialGradient>
+    <pattern id="mesh" width="9" height="8" patternUnits="userSpaceOnUse"><path d="M0 0H9V8" fill="none" stroke="#c9e2e1" stroke-opacity=".52" stroke-width=".65"/></pattern>
+  </defs>
+  <symbol id="stadium" viewBox="0 0 720 360">
+    <path d="M24 16Q360-12 696 16V338H24Z" fill="url(#night)"/>
+    <g fill="none" stroke="#87b2bf" stroke-opacity=".11"><path d="M25 75Q360 147 695 75M25 88Q360 160 695 88M25 101Q360 173 695 101"/><path d="M60 84V112M100 92V121M140 100V128M180 106V134M220 111V139M260 115V142M300 118V145M340 120V147M380 120V147M420 118V145M460 115V142M500 111V139M540 106V134M580 100V128M620 92V121M660 84V112"/></g>
+    <path d="M25 128Q360 173 695 128" fill="none" stroke="#8dddc1" stroke-opacity=".3" stroke-width="2"/>
+    <g fill="#bbebf4" opacity=".45"><circle cx="80" cy="106" r="1"/><circle cx="125" cy="120" r="1"/><circle cx="191" cy="122" r="1"/><circle cx="235" cy="135" r="1"/><circle cx="488" cy="130" r="1"/><circle cx="550" cy="121" r="1"/><circle cx="604" cy="116" r="1"/><circle cx="645" cy="104" r="1"/></g>
+    <path d="M200 140H520L687 338H33Z" fill="url(#grass)"/>
+    <g fill="#84c783" opacity=".065"><path d="M200 140H520L531 153H189ZM174 171H546L563 191H157ZM136 216H584L609 246H111ZM81 281H639L673 322H47Z"/></g>
+    <g fill="none" stroke="#d8edcb" stroke-opacity=".6" stroke-width="1.4" stroke-linejoin="round"><path d="M205 145H515L666 326H54ZM247 153 207 208H513L473 153M284 153 270 175H450L436 153"/><path d="M284 208Q360 244 436 208M55 326H666"/><ellipse cx="360" cy="197" rx="2" ry="1"/></g>
+    <path d="M83 42 34 239 357 192Z" fill="url(#beam)"/><path d="m637 42 49 197-323-47Z" fill="url(#beam)"/>
+    <g stroke="#88b4c2" stroke-width="2" stroke-opacity=".5"><path d="M82 44V110M638 44V110"/></g>
+    <g fill="#e3f8ff"><rect x="58" y="34" width="48" height="10" rx="3" opacity=".16"/><rect x="614" y="34" width="48" height="10" rx="3" opacity=".16"/><path d="M61 37H68V40H61ZM72 37H79V40H72ZM83 37H90V40H83ZM94 37H101V40H94ZM619 37H626V40H619ZM630 37H637V40H630ZM641 37H648V40H641ZM652 37H659V40H652Z"/></g>
+  </symbol>
+  <symbol id="net" viewBox="0 0 720 360">
+    <path d="M275 74 299 63H461L445 74ZM445 74 461 63V132L445 153ZM275 74 299 63V132L275 153Z" fill="url(#mesh)" stroke="#c5dcd9" stroke-opacity=".3" stroke-width=".8"/>
+    <path d="M299 63H461V132H299Z" fill="#b4d3cf" fill-opacity=".055"/>
+    <path d="M299 63H461V132H299Z" fill="url(#mesh)" stroke="#c5dcd9" stroke-opacity=".45" stroke-width=".8"/>
+  </symbol>
+  <symbol id="goal" viewBox="0 0 720 360">
+    <path d="M275 153 299 132H461L445 153" fill="none" stroke="#b5cfcd" stroke-opacity=".4" stroke-width="1.4"/>
+    <path d="M275 154V74H445V154" fill="none" stroke="#051e22" stroke-opacity=".5" stroke-width="7"/>
+    <path d="M275 153V74H445V153" fill="none" stroke="#d8e7e8" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M274 151V73H444" fill="none" stroke="#fff" stroke-opacity=".85" stroke-width="1.2"/>
+  </symbol>
+  <symbol id="ball" viewBox="0 0 100 100">
+    <circle cx="50" cy="50" r="49" fill="url(#leather)" stroke="#eff6f4" stroke-opacity=".65"/>
+    <g fill="#121b23" stroke="#53636c" stroke-width=".7" stroke-linejoin="round">
+      <path d="m50 29 20 15-8 24H38l-8-24Z"/>
+      <path d="m31 4 8 9-18 17L9 24 17 12ZM69 4l-8 9 18 17 12-6-8-12ZM2 58l15-2 11 23-11 8-9-13ZM98 58l-15-2-11 23 11 8 9-13ZM34 96l5-10h22l5 10Z"/>
+    </g>
+    <g fill="none" stroke="#73838c" stroke-width=".9"><path d="m39 13 11 16 11-16M21 30l9 14M79 30l-9 14M17 56l13-12M83 56 70 44M28 79l10-11M72 79 62 68M39 86l-1-18M61 86l1-18"/></g>
+    <circle cx="50" cy="50" r="49" fill="url(#shine)"/>
+    <ellipse cx="32" cy="22" rx="12" ry="5" fill="#fff" opacity=".23" transform="rotate(-30 32 22)"/>
+  </symbol>
+</svg>

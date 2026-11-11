@@ -1,0 +1,93 @@
+/* Server-rendered Suspense fallback. Motion is transform/opacity only; no JS timers. */
+.ldj-loading {
+  --ldj-goal-cycle: 4s;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.75rem;
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 22rem;
+  padding: clamp(1.25rem, 4vw, 2.5rem) 1rem;
+  overflow: hidden;
+  border: 1px solid #25364c;
+  border-radius: 1rem;
+  background: radial-gradient(ellipse at 50% 35%, #122b3b 0%, #091423 55%, #060d18 100%);
+  color: #eef4fc;
+  text-align: center;
+}
+.ldj-loading__scene { inline-size: min(100%, 42rem); }
+.ldj-loading__stadium { display: block; inline-size: 100%; block-size: auto; overflow: visible; }
+.ldj-loading__shot, .ldj-loading__shadow, .ldj-loading__ball,
+.ldj-loading__net, .ldj-loading__impact { transform-box: view-box; transform-origin: 0 0; }
+.ldj-loading__shot { animation: ldj-goal-shot var(--ldj-goal-cycle) linear infinite; }
+.ldj-loading__ball { animation: ldj-goal-roll var(--ldj-goal-cycle) linear infinite; }
+.ldj-loading__shadow { animation: ldj-goal-shadow var(--ldj-goal-cycle) linear infinite; }
+.ldj-loading__net { transform-origin: 402px 120px; animation: ldj-goal-net var(--ldj-goal-cycle) linear infinite; }
+.ldj-loading__impact {
+  fill: none;
+  stroke: #d5fff0;
+  stroke-width: 1;
+  opacity: 0;
+  transform-origin: 402px 120px;
+  animation: ldj-goal-impact var(--ldj-goal-cycle) linear infinite;
+}
+.ldj-loading__brand {
+  margin: 0;
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.16em;
+}
+.ldj-loading__caption { margin: 0; color: #afc0d5; font-size: 0.875rem; line-height: 1.5; }
+.ldj-loading__dots { animation: ldj-loading-signal 1.6s ease-in-out infinite; }
+/* Ball crosses the mouth at 58%, reaches the back net at 64%, then settles. */
+@keyframes ldj-goal-shot {
+  0% { transform: translate(310px, 280px) scale(1); opacity: 0; }
+  7%, 12% { transform: translate(310px, 280px) scale(1); opacity: 1; }
+  28% { transform: translate(344px, 212px) scale(0.8); opacity: 1; }
+  44% { transform: translate(375px, 157px) scale(0.6); opacity: 1; }
+  58% { transform: translate(395px, 132px) scale(0.46); opacity: 1; }
+  64% { transform: translate(402px, 120px) scale(0.42); opacity: 1; }
+  72% { transform: translate(400px, 125px) scale(0.43); opacity: 1; }
+  82% { transform: translate(398px, 132px) scale(0.43); opacity: 1; }
+  94%, 100% { transform: translate(398px, 132px) scale(0.43); opacity: 0; }
+}
+@keyframes ldj-goal-shadow {
+  0% { transform: translate(310px, 300px) scale(1); opacity: 0; }
+  7%, 12% { transform: translate(310px, 300px) scale(1); opacity: 1; }
+  28% { transform: translate(344px, 235px) scale(0.75); opacity: 0.7; }
+  44% { transform: translate(375px, 181px) scale(0.5); opacity: 0.5; }
+  58% { transform: translate(395px, 146px) scale(0.4); opacity: 0.6; }
+  64% { transform: translate(402px, 137px) scale(0.36); opacity: 0.65; }
+  82% { transform: translate(398px, 140px) scale(0.4); opacity: 0.8; }
+  94%, 100% { transform: translate(398px, 140px) scale(0.4); opacity: 0; }
+}
+@keyframes ldj-goal-roll {
+  0%, 12% { transform: rotate(0deg); }
+  64% { transform: rotate(690deg); }
+  82%, 100% { transform: rotate(735deg); }
+}
+@keyframes ldj-goal-net {
+  0%, 61%, 86%, 100% { transform: translate(0, 0) scale(1); }
+  66% { transform: translate(4px, -2px) scale(1.045, 1.08); }
+  71% { transform: translate(-2px, 1px) scale(0.985, 0.97); }
+  76% { transform: translate(1px, -1px) scale(1.015, 1.025); }
+  81% { transform: translate(-0.5px, 0) scale(0.995, 0.99); }
+}
+@keyframes ldj-goal-impact {
+  0%, 62%, 80%, 100% { opacity: 0; transform: scale(0.4); }
+  65% { opacity: 0.5; transform: scale(0.65); }
+  78% { opacity: 0; transform: scale(1.6); }
+}
+@keyframes ldj-loading-signal {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ldj-loading__shot, .ldj-loading__shadow, .ldj-loading__ball,
+  .ldj-loading__net, .ldj-loading__impact, .ldj-loading__dots { animation: none; }
+  .ldj-loading__shot { transform: translate(398px, 128px) scale(0.43); opacity: 1; }
+  .ldj-loading__shadow { transform: translate(398px, 140px) scale(0.4); opacity: 0.8; }
+}

@@ -42,7 +42,8 @@ describe("premium structure without duplicate branding", () => {
     if (locale === "pt-PT") expect(html).toContain("Explora os números de cada jogo.");
     if (locale === "en-US") expect(html).toContain("Explore the numbers behind each game.");
     expect(html).not.toContain("nav-aside");
-    expect(html).not.toContain("hud-loader--full");
+    expect(html).not.toContain('role="status"');
+    expect(html).not.toContain('aria-busy="true"');
     expect(html).not.toContain("stadium-hero__signature");
   });
 
@@ -55,7 +56,8 @@ describe("premium structure without duplicate branding", () => {
     expect(html).toContain("Existing page content");
     expect(html).not.toContain('id="hero-title"');
     expect(html).not.toContain('class="home-sidebar"');
-    expect(html).not.toContain("hud-loader--full");
+    expect(html).not.toContain('role="status"');
+    expect(html).not.toContain('aria-busy="true"');
   });
 
   it("keeps viewport rules and respects explicitly sized article headlines", () => {

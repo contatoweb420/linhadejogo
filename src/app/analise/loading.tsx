@@ -1,5 +1,5 @@
-import { HudLoader } from "@/components/hud-loader";
+import { FootballLoader } from "@/components/football-loader";
 
 export default function Loading() {
-  return <HudLoader variant="compact" label="A abrir a análise do jogo." />;
+  return <FootballLoader label="A abrir a análise do jogo." />;
 }
