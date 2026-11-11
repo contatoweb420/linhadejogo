@@ -1,8 +1,9 @@
+import { tempestadeCharlesArticle } from "./tempestade-charles";
 import { footballWeekArticles } from "./football-week-20261109";
 import type { CoverScene } from "@/components/cover";
 import type { ArticleImage } from "@/server/images/providers";
 
-export const BLOG_CATEGORIES = ["Antevisão dos jogos", "Análise estatística", "Campeonatos", "Notícias", "Seleção Portuguesa"] as const;
+export const BLOG_CATEGORIES = ["Antevisão dos jogos", "Análise estatística", "Campeonatos", "Notícias", "Seleção Portuguesa", "Futebol feminino / Internacional"] as const;
 
 export type BlogCategory = (typeof BLOG_CATEGORIES)[number];
 export type ArticleStatus = "publicado" | "rascunho";
@@ -50,6 +51,7 @@ const exampleSource: ArticleSource = {
 };
 
 export const articles: Article[] = [
+  tempestadeCharlesArticle,
   ...footballWeekArticles,
   {
     title: "Como ler uma estimativa de casa, empate e visita",

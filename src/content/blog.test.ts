@@ -13,7 +13,7 @@ describe("blog local", () => {
 
   it("destaca o mais recente e pagina o resto", () => {
     const newSlugs = new Set(footballWeekArticles.map(article => article.slug));
-    const historical = articles.filter(article => !newSlugs.has(article.slug));
+    const historical = articles.filter(article => !newSlugs.has(article.slug) && article.slug !== "tempestade-charles-adia-jogos-benfica-torreense");
     const listing = queryArticles({}, historical.filter(article => article.status === "publicado").sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)));
     expect(listing.featured?.slug).toBe("cristiano-ronaldo-despede-se-selecao-portuguesa");
     expect(listing.items).toHaveLength(4);

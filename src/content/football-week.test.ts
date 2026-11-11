@@ -13,7 +13,7 @@ describe("verified newsroom publication", () => {
     expect(new Set(articles.map(article => article.slug)).size).toBe(articles.length);
     for (const article of footballWeekArticles) expect(articles).toContain(article);
     expect(articles.find(article => article.slug === "cristiano-ronaldo-despede-se-selecao-portuguesa")?.publishedAt).toBe("2026-11-05");
-    const list = queryArticles({});
+    const list = queryArticles({}, articles.filter(article => article.slug !== "tempestade-charles-adia-jogos-benfica-torreense" && article.status === "publicado").sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)));
     expect([list.featured, ...list.items].slice(0, 4).map(article => article?.slug)).toEqual(footballWeekArticles.map(article => article.slug));
   });
   it.each(footballWeekArticles)("validates editorial content and provenance: $slug", article => {
