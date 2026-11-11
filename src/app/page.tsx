@@ -167,7 +167,11 @@ function Lead({ match, locale }: { match: DayMatch; locale: Locale }) {
       <p className="mt-3 text-sm text-muted">
         {homeDateTime(match.utcDate, locale)} · {t(formatStatus(match.status))}
       </p>
-      <p className="mt-2 text-xs text-muted">{locale === "en-US" ? "Saved status. Updated:" : "Estado guardado. Atualizado em:"} {homeDateTime(match.fetchedAt, locale)}</p>
+      <p className="mt-2 text-center text-xs text-muted">
+        {locale === "en-US" ? "Saved status" : "Estado guardado"}
+        <br />
+        {locale === "en-US" ? "Updated:" : "Atualizado em:"} {homeDateTime(match.fetchedAt, locale)}
+      </p>
       <p className="mt-2 text-sm">{homeResultDetails(match, locale).join(" · ")}</p>
       <Suspense fallback={null}><FeaturedProbabilities match={match} locale={locale} /></Suspense>
       <Link href={homeHref(`/jogos/${match.externalId}`, locale)} className="btn mt-4">

@@ -539,3 +539,25 @@ body {
     font-size: .5rem;
   }
 }
+
+.featured-match > .probability-tiles {
+  width: 92%;
+  max-width: 30rem;
+  margin-top: 1rem;
+  margin-inline-start: auto;
+  gap: clamp(4px, 2%, 10px);
+}
+.featured-match > .probability-tiles > .probability-tiles__tile {
+  aspect-ratio: auto;
+  gap: 5px;
+  padding: 5px 4px;
+}
+.featured-match > .probability-tiles dt {
+  position: static;
+  width: auto;
+  color: inherit;
+  font-size: clamp(.55rem, 3cqi, .75rem);
+}
+.featured-match > .probability-tiles dd {
+  font-size: clamp(1rem, 9cqi, 2.875rem);
+}
